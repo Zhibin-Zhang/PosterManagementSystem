@@ -1,0 +1,156 @@
+package ordappengine;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.logging.Level;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+
+import com.google.appengine.api.memcache.ErrorHandlers;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
+
+public class DatastoreControl implements StorageManager {
+
+	@Override
+	public boolean isAvailable(String username) {
+		EntityManager em = EMF.get().createEntityManager();
+		User user = null;
+		try{
+			user = em.find(User.class, username);
+		}finally{
+			em.close();
+		}
+		if(user == null)
+			return true;
+		return false;
+	}
+
+	@Override
+	public BackendSession authenticateUser(String username, String password) {
+		EntityManager em = EMF.get().createEntityManager();
+		User user = null;
+		try{
+			user = em.find(User.class, username);
+		}finally{
+			em.close();
+		}
+		//if the user exists and the password matches
+		if(user != null && user.password.equals(password)){
+			BackendSession session = new BackendSession(generateSessionToken());
+			session.isAdmin = user.isAdmin;
+			session.submissions = user.submissions;
+			session.userName = user.username;
+			String cacheKey = session.getToken();
+			 // Using the synchronous cache
+		    MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+		    syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
+		    
+		    //put the session object into the Memcache
+		    byte[] cacheSession = getByteArray(session);
+		    if(cacheSession != null){
+		    	syncCache.put(cacheKey, cacheSession);
+		    }
+			return session;
+		}
+		return null;
+	}
+
+	@Override
+	public boolean createUser(String username, String password, boolean isAdmin) {
+		EntityManager em = EMF.get().createEntityManager();
+		User user = new User();
+		user.username = username;
+		user.password = password;
+		user.isAdmin = isAdmin;
+		try{
+			em.persist(user);
+		}catch(PersistenceException e){
+			em.close();
+			return false;
+		}
+		finally{
+			em.close();
+		}
+		return true;
+	}
+
+	@Override
+	public boolean insertPoster(String username, Submission submission) {
+		EntityManager em = EMF.get().createEntityManager();
+		User user = null;
+		try{
+			user = em.find(User.class, username);
+			if(user == null)
+				return false;
+			user.addSubmission(submission);
+			em.persist(user);
+		}finally{
+			em.close();
+		}
+		return true;
+	}
+	
+	private String generateSessionToken(){
+		SecureRandom random = null;
+		String sessionKey = null;
+		//check if the random number is in the Memcache
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+	    syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
+	    byte[] value = null;
+	    do{
+	    	random = new SecureRandom();
+	    	sessionKey = new BigInteger(130,random).toString(32);
+	    	value = (byte[]) syncCache.get(sessionKey);
+	    }while(value != null);
+		return sessionKey;
+	}
+	
+	private byte[] getByteArray(BackendSession session){
+		ObjectOutputStream oos = null;
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		byte[] userArray = null;
+		try{
+			oos = new ObjectOutputStream(bos);
+			oos.writeObject(session);
+			userArray = bos.toByteArray();
+		}catch(IOException e){
+			e.printStackTrace();
+		}finally{
+			try {
+				oos.close();
+				bos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return userArray;
+	}
+
+	@Override
+	public boolean logout(String sessionID) {
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+	    syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
+	    if(syncCache.contains(sessionID)){
+	    	syncCache.delete(sessionID);
+	    	return true;
+	    }
+		return false;
+	}
+
+	@Override
+	public boolean isInSession(String sessionID) {
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+	    syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
+	    if(syncCache.contains(sessionID))
+	    	return true;
+		return false;
+	}
+
+
+
+}

@@ -19,15 +19,16 @@ public class NetworkEndpoint {
 	}
 	
 	public BackendSession signIn(String user, String password) {
-		BackendSession newSession = storage.authenticateUser(user, password);
-		//boolean test = storage.authenticateUser(user, password);
+		BackendSession newSession = new BackendSession();
+		
 		// Authenticate in database. This didn't work. It's giving me errors!!!
-		if (newSession != null) {
+		//if (storage.authenticateUser(user, password)) {
+		if (user != null && user.equals("test@gmail.com") && password.equals("test")) {
 			/* I should be able to call a method like StorageManager.createSession(user)
 			   It should give me back a BackendSession object with a randomly generated
 			   token. This token should get stored in the database to keep track of the
 			   session */
-			//newSession.setToken("as84h39hb304nr55");
+			newSession.setToken("as84h39hb304nr55");
 		}
 		
 		/* I am returning an object that wraps the session token.

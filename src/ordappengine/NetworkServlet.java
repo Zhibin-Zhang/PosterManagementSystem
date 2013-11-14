@@ -95,9 +95,9 @@ public class NetworkServlet extends HttpServlet {
 			}
 			break;
 		case REGISTER:
+			//It seems like this part is ignored after click the register button --Zhibin
 			emailAddress = request.getParameter("emailAddress");
 			password = request.getParameter("password");
-			
 			printWriter.print("REGISTER CALLED WIT" + emailAddress + " "
 					+ password);
 
@@ -106,7 +106,6 @@ public class NetworkServlet extends HttpServlet {
 			response.setContentType("text/plain");
 			ServletFileUpload upload = new ServletFileUpload();
 			FileItemIterator iterator = upload.getItemIterator(request);
-			int count = 0;
 			while (iterator.hasNext()) {
 				FileItemStream item = iterator.next();
 				if (item.isFormField()) {
@@ -114,18 +113,11 @@ public class NetworkServlet extends HttpServlet {
 					IOUtils.copy(item.openStream(), writer, "UTF-8");
 					String theString = writer.toString();
 					printWriter.println(theString);
-					if(count == 0)
-						emailAddress = theString;
-					if(count == 1)
-						password = theString;
-					count++;
 				}
 				else{
 					
 				}
 			}
-			DatastoreControl datastore = new DatastoreControl();
-			datastore.createUser(emailAddress, password, false);
 			break;
 		case LOGOUT:
 			// Check if there is an existing session

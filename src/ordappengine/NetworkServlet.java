@@ -49,53 +49,89 @@ public class NetworkServlet extends HttpServlet {
 	private void processRequest(HttpServletRequest request,
 			HttpServletResponse response) throws FileUploadException,
 			IOException {
+		// Anti-cache headers. see
+		// http://www.xyzws.com/JSPfaq/how-to-disable-browser-caching-for-a-specific-jsp/11
+		response.setHeader("Pragma", "no-cache");
+		response.setHeader("Cache-Control", "no-cache");
+		response.setDateHeader("Expires", 0);
+
 		PrintWriter printWriter = null;
-		
+
 		try {
 			printWriter = response.getWriter();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		int actionIndex = Integer.parseInt(request.getParameter("actionIndex"));
-		
+
 		String password = "";
 		String emailAddress = "";
 
 		NetworkEndpoint endpoint = new NetworkEndpoint();
 		HttpSession session;
-		
+
 		switch (actionIndex) {
 		case SIGNIN:
 			// Obtain entered information
 			emailAddress = request.getParameter("emailAddress");
 			password = request.getParameter("password");
-			
+
 			// Check if there is an existing session
 			session = request.getSession(false);
-			
+
 			if (session == null) {
 				// Session does not exist. Authenticate
-				BackendSession backendSession = endpoint.signIn(emailAddress, password);
-				
-				if (backendSession.token == null) {
+				BackendSession backendSession;
+
+				if (emailAddress == null || password == null
+						|| emailAddress.isEmpty() || password.isEmpty()) {
+					backendSession = null;
+				} else {
+					backendSession = endpoint.signIn(emailAddress, password);
+				}
+
+				if (backendSession == null) {
 					// Authentication failed
 					response.sendRedirect("/index.jsp?error=bad_credentials");
 				} else {
-					// Authentication succeeded. Create session and store backend session token
+					// Authentication succeeded. Create session and store
+					// backend session token
 					session = request.getSession(true);
-					session.setAttribute("token", backendSession.getToken());
-					
+					session.setAttribute("token", backendSession.token);
+
 					// Redirect the user to the list of submissions
-					response.sendRedirect("/list.jsp");
+					if (backendSession.isAdmin) {
+						response.sendRedirect("/list.jsp");
+					} else {
+						printWriter
+								.print("This should have redirected to the normal user website");
+					}
 				}
 			} else {
-				// Session exists. Redirect the user to the list of submissions
-				response.sendRedirect("/list.jsp");
+				// Session exists. Redirect the user to the appropriate site
+				if (session.getAttribute("token") != null) {
+					endpoint.setBackendSessionToken((String) session
+							.getAttribute("token"));
+					BackendSession backendSession = endpoint
+							.authenticateSession();
+
+					if (backendSession != null && backendSession.isAdmin) {
+						response.sendRedirect("/list.jsp");
+					} else {
+						printWriter
+								.print("This should have redirected to the normal user website");
+					}
+				} else {
+					printWriter
+							.print("This should have redirected to the normal user website");
+				}
 			}
+
 			break;
 		case REGISTER:
-			//It seems like this part is ignored after click the register button --Zhibin
+			// It seems like this part is ignored after click the register
+			// button --Zhibin
 			emailAddress = request.getParameter("emailAddress");
 			password = request.getParameter("password");
 			printWriter.print("REGISTER CALLED WIT" + emailAddress + " "
@@ -113,26 +149,26 @@ public class NetworkServlet extends HttpServlet {
 					IOUtils.copy(item.openStream(), writer, "UTF-8");
 					String theString = writer.toString();
 					printWriter.println(theString);
-				}
-				else{
-					
+				} else {
+
 				}
 			}
 			break;
 		case LOGOUT:
 			// Check if there is an existing session
 			session = request.getSession(false);
-			
+
 			if (session != null) {
 				if (session.getAttribute("token") != null) {
-					endpoint.setBackendSessionToken((String)session.getAttribute("token"));
+					endpoint.setBackendSessionToken((String) session
+							.getAttribute("token"));
 					endpoint.logout();
 				}
-				
+
 				// Invalidate HTTP session
 				session.invalidate();
 			}
-			
+
 			response.sendRedirect("/index.jsp");
 			break;
 		}

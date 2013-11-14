@@ -7,64 +7,36 @@ import com.google.api.server.spi.config.ApiNamespace;
 public class NetworkEndpoint {
 	private StorageManager storage;
 	private BackendSession session;
-	
+
 	public NetworkEndpoint() {
 		storage = new DatastoreControl();
 		session = new BackendSession();
 	}
-	
+
 	public NetworkEndpoint(String token) {
 		storage = new DatastoreControl();
 		session = new BackendSession(token);
 	}
-	
+
 	public BackendSession signIn(String user, String password) {
-		BackendSession newSession = new BackendSession();
-		
-		// Authenticate in database. This didn't work. It's giving me errors!!!
-		//if (storage.authenticateUser(user, password)) {
-		if (user != null && user.equals("test@gmail.com") && password.equals("test")) {
-			/* I should be able to call a method like StorageManager.createSession(user)
-			   It should give me back a BackendSession object with a randomly generated
-			   token. This token should get stored in the database to keep track of the
-			   session */
-			newSession.setToken("as84h39hb304nr55");
-		}
-		
-		/* I am returning an object that wraps the session token.
-		   In future requests, I expect to be passed this token either by way of
-		   NetworkEndpoint(String token), or by setBackendSessionToken(String token).
-		   This way, I can keep track of logged in users. */
-		
-		return newSession;
+		return storage.authenticateUser(user, password);
 	}
-	
+
 	public void setBackendSessionToken(String token) {
-		session.setToken(token);
+		session.token = token;
 	}
-	
-	public SessionType getSessionType() {
-		// Here, I should be able to call a method in StorageManager to check that the
-		// session is registered and return the user registered in that session.
-		// The method should look like getSessionUser(BackendSession). It should return
-		// null if the session does not exist. Otherwise, it should return the user
-		// registered in the session.
-		if (session.getToken().equals("as84h39hb304nr55")) {
-			// Here, I should be able to call a method in StorageManager to check if a
-			// user is an administrator. It should look like isAdmin(user).
-			if (true) {
-				return new SessionType("ADMIN");
-			} else {
-				return new SessionType("NORMAL");
-			}
+
+	public BackendSession authenticateSession() {
+		if (session.token != null) {
+			return storage.getSessionFromCache(session.token);
 		}
-		
-		return new SessionType("NO_SESSION");
+
+		return null;
 	}
-	
+
 	public void logout() {
-		// Here, I should be able to call a method in StorageManager to delete the
-		// session from the database if it exists. It should look like
-		// destroySession(BackendSession)
+		if (session.token != null) {
+			storage.logout(session.token);
+		}
 	}
 }

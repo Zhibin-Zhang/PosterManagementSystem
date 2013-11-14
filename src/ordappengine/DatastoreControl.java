@@ -1,8 +1,10 @@
 package ordappengine;
 
 import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.logging.Level;
@@ -20,12 +22,12 @@ public class DatastoreControl implements StorageManager {
 	public boolean isAvailable(String username) {
 		EntityManager em = EMF.get().createEntityManager();
 		User user = null;
-		try{
+		try {
 			user = em.find(User.class, username);
-		}finally{
+		} finally {
 			em.close();
 		}
-		if(user == null)
+		if (user == null)
 			return true;
 		return false;
 	}
@@ -34,27 +36,31 @@ public class DatastoreControl implements StorageManager {
 	public BackendSession authenticateUser(String username, String password) {
 		EntityManager em = EMF.get().createEntityManager();
 		User user = null;
-		try{
+		try {
 			user = em.find(User.class, username);
-		}finally{
+		} finally {
 			em.close();
 		}
-		//if the user exists and the password matches
-		if(user != null && user.password.equals(password)){
+
+		// if the user exists and the password matches
+		if (user != null && user.password.equals(password)) {
 			BackendSession session = new BackendSession(generateSessionToken());
 			session.isAdmin = user.isAdmin;
 			session.submissions = user.submissions;
-			session.userName = user.username;
-			String cacheKey = session.getToken();
-			 // Using the synchronous cache
-		    MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-		    syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
-		    
-		    //put the session object into the Memcache
-		    byte[] cacheSession = getByteArray(session);
-		    if(cacheSession != null){
-		    	syncCache.put(cacheKey, cacheSession);
-		    }
+			session.emailAddress = user.emailAddress;
+			String cacheKey = session.token;
+			// Using the synchronous cache
+			MemcacheService syncCache = MemcacheServiceFactory
+					.getMemcacheService();
+			syncCache.setErrorHandler(ErrorHandlers
+					.getConsistentLogAndContinue(Level.INFO));
+
+			// put the session object into the Memcache
+			byte[] cacheSession = getByteArray(session);
+
+			if (cacheSession != null) {
+				syncCache.put(cacheKey, cacheSession);
+			}
 			return session;
 		}
 		return null;
@@ -64,16 +70,15 @@ public class DatastoreControl implements StorageManager {
 	public boolean createUser(String username, String password, boolean isAdmin) {
 		EntityManager em = EMF.get().createEntityManager();
 		User user = new User();
-		user.username = username;
+		user.emailAddress = username;
 		user.password = password;
 		user.isAdmin = isAdmin;
-		try{
+		try {
 			em.persist(user);
-		}catch(PersistenceException e){
+		} catch (PersistenceException e) {
 			em.close();
 			return false;
-		}
-		finally{
+		} finally {
 			em.close();
 		}
 		return true;
@@ -83,44 +88,45 @@ public class DatastoreControl implements StorageManager {
 	public boolean insertPoster(String username, Submission submission) {
 		EntityManager em = EMF.get().createEntityManager();
 		User user = null;
-		try{
+		try {
 			user = em.find(User.class, username);
-			if(user == null)
+			if (user == null)
 				return false;
 			user.addSubmission(submission);
 			em.persist(user);
-		}finally{
+		} finally {
 			em.close();
 		}
 		return true;
 	}
-	
-	private String generateSessionToken(){
+
+	private String generateSessionToken() {
 		SecureRandom random = null;
 		String sessionKey = null;
-		//check if the random number is in the Memcache
+		// check if the random number is in the Memcache
 		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-	    syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
-	    byte[] value = null;
-	    do{
-	    	random = new SecureRandom();
-	    	sessionKey = new BigInteger(130,random).toString(32);
-	    	value = (byte[]) syncCache.get(sessionKey);
-	    }while(value != null);
+		syncCache.setErrorHandler(ErrorHandlers
+				.getConsistentLogAndContinue(Level.INFO));
+		byte[] value = null;
+		do {
+			random = new SecureRandom();
+			sessionKey = new BigInteger(130, random).toString(32);
+			value = (byte[]) syncCache.get(sessionKey);
+		} while (value != null);
 		return sessionKey;
 	}
-	
-	private byte[] getByteArray(BackendSession session){
+
+	private byte[] getByteArray(BackendSession session) {
 		ObjectOutputStream oos = null;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		byte[] userArray = null;
-		try{
+		try {
 			oos = new ObjectOutputStream(bos);
 			oos.writeObject(session);
 			userArray = bos.toByteArray();
-		}catch(IOException e){
+		} catch (IOException e) {
 			e.printStackTrace();
-		}finally{
+		} finally {
 			try {
 				oos.close();
 				bos.close();
@@ -134,23 +140,60 @@ public class DatastoreControl implements StorageManager {
 	@Override
 	public boolean logout(String sessionID) {
 		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-	    syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
-	    if(syncCache.contains(sessionID)){
-	    	syncCache.delete(sessionID);
-	    	return true;
-	    }
+		syncCache.setErrorHandler(ErrorHandlers
+				.getConsistentLogAndContinue(Level.INFO));
+		if (syncCache.contains(sessionID)) {
+			syncCache.delete(sessionID);
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean isInSession(String sessionID) {
 		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-	    syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
-	    if(syncCache.contains(sessionID))
-	    	return true;
+		syncCache.setErrorHandler(ErrorHandlers
+				.getConsistentLogAndContinue(Level.INFO));
+		if (syncCache.contains(sessionID))
+			return true;
 		return false;
 	}
 
+	@Override
+	public BackendSession getSessionFromCache(String sessionID) {
+		BackendSession session = null;
 
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+		syncCache.setErrorHandler(ErrorHandlers
+				.getConsistentLogAndContinue(Level.INFO));
 
+		if (syncCache.contains(sessionID)) {
+			ByteArrayInputStream bis = null;
+			ObjectInputStream ois = null;
+
+			try {
+				bis = new ByteArrayInputStream(
+						(byte[]) syncCache.get(sessionID));
+				ois = new ObjectInputStream(bis);
+
+				session = (BackendSession) ois.readObject();
+			} catch (Exception e) {
+
+			} finally {
+				try {
+					if (bis != null) {
+						bis.close();
+					}
+
+					if (bis != null) {
+						ois.close();
+					}
+				} catch (Exception e) {
+
+				}
+			}
+		}
+
+		return session;
+	}
 }

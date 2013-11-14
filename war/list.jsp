@@ -1,6 +1,11 @@
 <%@ page session="false" %><%@ 
 page import="ordappengine.*" %><%
 
+// Anti-cache headers. see http://www.xyzws.com/JSPfaq/how-to-disable-browser-caching-for-a-specific-jsp/11
+response.setHeader("Pragma", "no-cache");
+response.setHeader("Cache-Control", "no-cache");
+response.setDateHeader("Expires", 0);
+
 // Check if session exists and is valid
 HttpSession session = request.getSession(false);
 NetworkEndpoint endpoint = new NetworkEndpoint();
@@ -8,8 +13,9 @@ NetworkEndpoint endpoint = new NetworkEndpoint();
 if (session != null) {
 	if (session.getAttribute("token") != null) {
 		endpoint.setBackendSessionToken((String)session.getAttribute("token"));
+		BackendSession backendSession = endpoint.authenticateSession();
 		
-		if (endpoint.getSessionType().type.equals("ADMIN")) {
+		if (backendSession != null && backendSession.isAdmin) {
 		
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -52,7 +58,7 @@ if (session != null) {
 				</ul>
 		</div>
 		<div id="content-pane">
-			<p align="right"><b><a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a></b></p>
+			<p align="right"><b>Welcome <%= backendSession.emailAddress %> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
 			<ul>
 				<li>
 					<div class="list-username">bob@aol.com</div>

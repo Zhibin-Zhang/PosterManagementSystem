@@ -1,10 +1,11 @@
 package ordappengine;
 
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class BackendSession {
+public class BackendSession implements Serializable {
 	public String token;
-	public String userName;
+	public String emailAddress;
 	public boolean isAdmin;
 	public ArrayList<Submission> submissions;
 
@@ -13,14 +14,6 @@ public class BackendSession {
 	}
 
 	public BackendSession(String token) {
-		this.token = token;
-	}
-	
-	public String getToken() {
-		return token;
-	}
-	
-	public void setToken(String token) {
 		this.token = token;
 	}
 }

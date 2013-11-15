@@ -17,6 +17,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 
 public class NetworkServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 	public static final int SIGNIN = 0;
 	public static final int REGISTER = 1;
 	public static final int UPLOADPOSTER = 2;
@@ -83,13 +84,7 @@ public class NetworkServlet extends HttpServlet {
 			if (session == null) {
 				// Session does not exist. Authenticate
 				BackendSession backendSession;
-
-				if (emailAddress == null || password == null
-						|| emailAddress.isEmpty() || password.isEmpty()) {
-					backendSession = null;
-				} else {
-					backendSession = endpoint.signIn(emailAddress, password);
-				}
+				backendSession = endpoint.signIn(emailAddress, password);
 
 				if (backendSession == null) {
 					// Authentication failed

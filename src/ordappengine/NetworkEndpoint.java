@@ -5,21 +5,26 @@ import com.google.api.server.spi.config.ApiNamespace;
 
 @Api(name = "networkendpoint", namespace = @ApiNamespace(ownerDomain = "example.com", ownerName = "example.com", packagePath = "ordappengine"))
 public class NetworkEndpoint {
-	private StorageManager storage;
+	private StorageManager storageManager;
 	private BackendSession session;
 
 	public NetworkEndpoint() {
-		storage = new DatastoreControl();
+		storageManager = new DatastoreControl();
 		session = new BackendSession();
 	}
 
 	public NetworkEndpoint(String token) {
-		storage = new DatastoreControl();
+		storageManager = new DatastoreControl();
 		session = new BackendSession(token);
 	}
 
-	public BackendSession signIn(String user, String password) {
-		return storage.authenticateUser(user, password);
+	public BackendSession signIn(String emailAddress, String password) {
+		if (emailAddress == null || password == null || emailAddress.isEmpty()
+				|| password.isEmpty()) {
+			return null;
+		}
+
+		return storageManager.authenticateUser(emailAddress, password);
 	}
 
 	public void setBackendSessionToken(String token) {
@@ -28,7 +33,7 @@ public class NetworkEndpoint {
 
 	public BackendSession authenticateSession() {
 		if (session.token != null) {
-			return storage.getSessionFromCache(session.token);
+			return storageManager.getSessionFromCache(session.token);
 		}
 
 		return null;
@@ -36,7 +41,11 @@ public class NetworkEndpoint {
 
 	public void logout() {
 		if (session.token != null) {
-			storage.logout(session.token);
+			storageManager.logout(session.token);
 		}
+	}
+
+	public void setStorageManager(StorageManager storageManager) {
+		this.storageManager = storageManager;
 	}
 }

@@ -41,7 +41,7 @@ response.setDateHeader("Expires", 0);
 
 <div id="menu-wrapper">
 	<div id="menu-center">
-		<a href="index.html"><img alt="" src="images/whitelogo.png" /></a>
+		<a href="index.jsp"><img alt="" src="images/whitelogo.png" /></a>
 		<div class="register" onclick="showRegistration()">Register and Submit Poster</div>
 		<form id="signin-form" method="post" action="NetworkServlet">
 			<%

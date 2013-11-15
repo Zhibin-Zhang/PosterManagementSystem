@@ -33,7 +33,7 @@ if (session != null) {
 
 <div id="menu-wrapper">
 	<div id="menu-center">
-		<a href="index.html"><img alt="" src="images/whitelogo.png" /></a>
+		<a href="index.jsp"><img alt="" src="images/whitelogo.png" /></a>
 	</div>
 </div>
 <div id="content-wrapper">

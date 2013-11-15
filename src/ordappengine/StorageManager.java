@@ -1,13 +1,13 @@
 package ordappengine;
 
 public interface StorageManager {
-	boolean isAvailable(String username);
+	boolean isAvailable(String emailAddress);
 
-	boolean insertPoster(String username, Submission submission);
+	boolean insertPoster(String emailAddress, Submission submission);
 
-	BackendSession authenticateUser(String username, String password);
+	BackendSession authenticateUser(String emailAddress, String password);
 
-	boolean createUser(String username, String passowrd, boolean isAdmin);
+	boolean createUser(String emailAddress, String password, boolean isAdmin);
 
 	boolean logout(String sessionID);
 

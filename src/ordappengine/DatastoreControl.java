@@ -19,11 +19,11 @@ import com.google.appengine.api.memcache.MemcacheServiceFactory;
 public class DatastoreControl implements StorageManager {
 
 	@Override
-	public boolean isAvailable(String username) {
+	public boolean isAvailable(String emailAddress) {
 		EntityManager em = EMF.get().createEntityManager();
 		User user = null;
 		try {
-			user = em.find(User.class, username);
+			user = em.find(User.class, emailAddress);
 		} finally {
 			em.close();
 		}
@@ -33,11 +33,11 @@ public class DatastoreControl implements StorageManager {
 	}
 
 	@Override
-	public BackendSession authenticateUser(String username, String password) {
+	public BackendSession authenticateUser(String emailAddress, String password) {
 		EntityManager em = EMF.get().createEntityManager();
 		User user = null;
 		try {
-			user = em.find(User.class, username);
+			user = em.find(User.class, emailAddress);
 		} finally {
 			em.close();
 		}
@@ -67,10 +67,10 @@ public class DatastoreControl implements StorageManager {
 	}
 
 	@Override
-	public boolean createUser(String username, String password, boolean isAdmin) {
+	public boolean createUser(String emailAddress, String password, boolean isAdmin) {
 		EntityManager em = EMF.get().createEntityManager();
 		User user = new User();
-		user.emailAddress = username;
+		user.emailAddress = emailAddress;
 		user.password = password;
 		user.isAdmin = isAdmin;
 		try {
@@ -85,11 +85,11 @@ public class DatastoreControl implements StorageManager {
 	}
 
 	@Override
-	public boolean insertPoster(String username, Submission submission) {
+	public boolean insertPoster(String emailAddress, Submission submission) {
 		EntityManager em = EMF.get().createEntityManager();
 		User user = null;
 		try {
-			user = em.find(User.class, username);
+			user = em.find(User.class, emailAddress);
 			if (user == null)
 				return false;
 			user.addSubmission(submission);

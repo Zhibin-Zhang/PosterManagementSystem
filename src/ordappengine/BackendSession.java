@@ -17,4 +17,42 @@ public class BackendSession implements Serializable {
 	public BackendSession(String token) {
 		this.token = token;
 	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+
+	public ArrayList<Submission> getSubmissions() {
+		return submissions;
+	}
+
+	public void setSubmissions(ArrayList<Submission> submissions) {
+		this.submissions = submissions;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
+	
 }

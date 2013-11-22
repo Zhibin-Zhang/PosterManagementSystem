@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.logging.Level;
@@ -82,6 +83,16 @@ public class DatastoreControl implements StorageManager {
 		} finally {
 			em.close();
 		}
+
+		try {
+			Mailer.send(user.emailAddress, "Oklahoma Research Day Poster Management System Registration Information", 
+					"Thanks for registering Oklahoma Research Day Poster Management System. Please use your email address " +
+					"to login to the system./n/nCloud 5lusions Team");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return true;
 	}
 

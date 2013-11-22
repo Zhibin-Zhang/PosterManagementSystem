@@ -22,6 +22,7 @@ public class DatastoreControl implements StorageManager {
 	public boolean isAvailable(String emailAddress) {
 		EntityManager em = EMF.get().createEntityManager();
 		User user = null;
+		//test comment
 		try {
 			user = em.find(User.class, emailAddress);
 		} finally {

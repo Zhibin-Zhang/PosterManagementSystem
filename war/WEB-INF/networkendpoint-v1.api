@@ -1,0 +1,205 @@
+{
+  "extends" : "thirdParty.api",
+  "abstract" : false,
+  "root" : "https://postermanagementsystem.appspot.com/_ah/api",
+  "name" : "networkendpoint",
+  "version" : "v1",
+  "defaultVersion" : false,
+  "adapter" : {
+    "bns" : "https://postermanagementsystem.appspot.com/_ah/spi",
+    "deadline" : 10.0,
+    "type" : "lily"
+  },
+  "auth" : {
+    "allowCookieAuth" : false
+  },
+  "frontendLimits" : {
+    "unregisteredUserQps" : -1,
+    "unregisteredQps" : -1,
+    "unregisteredDaily" : -1,
+    "rules" : [ ]
+  },
+  "cacheControl" : {
+    "type" : "no-cache",
+    "maxAge" : 0
+  },
+  "ownerDomain" : "ordappengine",
+  "ownerName" : "ordappengine",
+  "packagePath" : "ordappengine",
+  "methods" : {
+    "networkendpoint.setBackendSessionToken" : {
+      "path" : "setBackendSessionToken/{token}",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.setBackendSessionToken",
+      "request" : {
+        "parameters" : {
+          "token" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "networkendpoint.authenticateSession" : {
+      "path" : "authenticateSession",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.authenticateSession",
+      "request" : {
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "networkendpoint.logout" : {
+      "path" : "logout",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.logout",
+      "request" : {
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "networkendpoint.setStorageManager" : {
+      "path" : "setStorageManager",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.setStorageManager",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "networkendpoint.signIn" : {
+      "path" : "signIn/{emailAddress}/{password}",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.signIn",
+      "request" : {
+        "parameters" : {
+          "emailAddress" : {
+            "type" : "string",
+            "required" : true
+          },
+          "password" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    }
+  },
+  "descriptor" : {
+    "schemas" : {
+      "BackendSession" : {
+        "id" : "BackendSession",
+        "type" : "object",
+        "properties" : {
+          "token" : {
+            "type" : "string"
+          },
+          "emailAddress" : {
+            "type" : "string"
+          },
+          "isAdmin" : {
+            "type" : "boolean"
+          },
+          "submissions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "Submission"
+            }
+          },
+          "admin" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "Submission" : {
+        "id" : "Submission",
+        "type" : "object",
+        "properties" : {
+          "username" : {
+            "type" : "string"
+          },
+          "posterName" : {
+            "type" : "string"
+          },
+          "posterStatus" : {
+            "type" : "string"
+          },
+          "blobKey" : {
+            "$ref" : "BlobKey"
+          }
+        }
+      },
+      "BlobKey" : {
+        "id" : "BlobKey",
+        "type" : "object",
+        "properties" : {
+          "keyString" : {
+            "type" : "string"
+          }
+        }
+      },
+      "StorageManager" : {
+        "id" : "StorageManager",
+        "type" : "object",
+        "properties" : {
+        }
+      }
+    },
+    "methods" : {
+      "ordappengine.NetworkEndpoint.setBackendSessionToken" : {
+      },
+      "ordappengine.NetworkEndpoint.authenticateSession" : {
+        "response" : {
+          "$ref" : "BackendSession"
+        }
+      },
+      "ordappengine.NetworkEndpoint.logout" : {
+      },
+      "ordappengine.NetworkEndpoint.setStorageManager" : {
+        "request" : {
+          "$ref" : "StorageManager"
+        }
+      },
+      "ordappengine.NetworkEndpoint.signIn" : {
+        "response" : {
+          "$ref" : "BackendSession"
+        }
+      }
+    }
+  }
+}

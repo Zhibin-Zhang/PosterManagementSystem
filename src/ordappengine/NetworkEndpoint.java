@@ -1,9 +1,12 @@
 package ordappengine;
 
+import javax.inject.Named;
+
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 
-@Api(name = "networkendpoint", namespace = @ApiNamespace(ownerDomain = "example.com", ownerName = "example.com", packagePath = "ordappengine"))
+@Api(name = "networkendpoint", namespace = @ApiNamespace(ownerDomain = "ordappengine", ownerName = "ordappengine", packagePath = "ordappengine"))
 public class NetworkEndpoint {
 	private StorageManager storageManager;
 	private BackendSession session;
@@ -18,7 +21,8 @@ public class NetworkEndpoint {
 		session = new BackendSession(token);
 	}
 
-	public BackendSession signIn(String emailAddress, String password) {
+	@ApiMethod(name = "signIn")
+	public BackendSession signIn(@Named("emailAddress")String emailAddress, @Named("password")String password) {
 		if (emailAddress == null || password == null || emailAddress.isEmpty()
 				|| password.isEmpty()) {
 			return null;
@@ -27,10 +31,12 @@ public class NetworkEndpoint {
 		return storageManager.authenticateUser(emailAddress, password);
 	}
 
-	public void setBackendSessionToken(String token) {
+	@ApiMethod(name = "setBackendSessionToken")
+	public void setBackendSessionToken(@Named("token")String token) {
 		session.token = token;
 	}
 
+	@ApiMethod(name = "authenticateSession")
 	public BackendSession authenticateSession() {
 		if (session.token != null) {
 			return storageManager.getSessionFromCache(session.token);
@@ -39,12 +45,14 @@ public class NetworkEndpoint {
 		return null;
 	}
 
+	@ApiMethod(name = "logout")
 	public void logout() {
 		if (session.token != null) {
 			storageManager.logout(session.token);
 		}
 	}
 
+	@ApiMethod(name = "setStorageManager")
 	public void setStorageManager(StorageManager storageManager) {
 		this.storageManager = storageManager;
 	}

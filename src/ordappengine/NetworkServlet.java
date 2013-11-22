@@ -105,6 +105,7 @@ public class NetworkServlet extends HttpServlet {
 				}
 			} else {
 				// Session exists. Redirect the user to the appropriate site
+				System.out.println("Something");
 				if (session.getAttribute("token") != null) {
 					endpoint.setBackendSessionToken((String) session
 							.getAttribute("token"));

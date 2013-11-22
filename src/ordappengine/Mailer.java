@@ -18,7 +18,7 @@ Session session = Session.getDefaultInstance(props, null);
 //2nd step)compose message  
 try {  
  MimeMessage message = new MimeMessage(session);  
- message.setFrom(new InternetAddress("Cloud5olutionsUCO@gmail.com" , "Poster Management System"));  
+ message.setFrom(new InternetAddress("Cloud5olutionsUCO@uco.com" , "Poster Management System"));  
  message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));  
  message.setSubject(subject);  
  message.setText(msg);  

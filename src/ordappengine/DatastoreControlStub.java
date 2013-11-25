@@ -1,5 +1,7 @@
 package ordappengine;
 
+import java.util.ArrayList;
+
 public class DatastoreControlStub implements StorageManager {
 
 	@Override
@@ -51,6 +53,12 @@ public class DatastoreControlStub implements StorageManager {
 
 	@Override
 	public BackendSession getSessionFromCache(String sessionID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<Submission> getBlobServe(String... emailAddress) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -8,11 +8,15 @@ import java.io.ObjectInputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 
+import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.memcache.ErrorHandlers;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
@@ -23,7 +27,7 @@ public class DatastoreControl implements StorageManager {
 	public boolean isAvailable(String emailAddress) {
 		EntityManager em = EMF.get().createEntityManager();
 		User user = null;
-		//test comment
+
 		try {
 			user = em.find(User.class, emailAddress);
 		} finally {
@@ -207,5 +211,43 @@ public class DatastoreControl implements StorageManager {
 		}
 
 		return session;
+	}
+	
+	
+	/** 
+	 *  This method will return the downloading address with filename in BlobServe object. 
+	 *  @param emailAddress emailAddress is optional parameter. Call the method with empty parameter will return
+	 *  					all the submissions downloading information in a ArralyList<Submission>;
+	 *  We have to use another servlet to serve the blob object. 
+	 *  @author Zhibin
+	 */
+	@Override
+	public ArrayList<Submission> getBlobServe(String... emailAddress) {
+		//if the emailAdress is null, return all the submission addresses
+		EntityManager em = EMF.get().createEntityManager();
+		ArrayList<Submission> serves = new ArrayList<Submission>();
+		List<User> results = null;	//List of users
+		if(emailAddress ==null){
+			//get all submissions
+			Query query = em.createNativeQuery("SELECT * FROM User");
+			results = query.getResultList();
+			for(User user : results){
+				ArrayList<Submission> submissions = user.submissions;
+				for(Submission sub : submissions){
+					serves.add(sub);
+				}
+			}
+		}else
+		{
+			//get submissions from specific user
+			String email = emailAddress[0];
+			Query query = em.createNamedQuery("SELECT u FROM User WHERE u.name = :email");
+			query.setParameter("email", email);
+			User user = (User)query.getSingleResult();
+			for(Submission sub : user.submissions){
+				serves.add(sub);
+			}
+		}
+		return serves;
 	}
 }

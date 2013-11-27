@@ -135,20 +135,51 @@ public class NetworkServlet extends HttpServlet {
 
 			break;
 		case UPLOADPOSTER:
+			String registerEmail = null;
+			String registerPassword = null;
+			String registerConfirmPassword = null;
+			
 			response.setContentType("text/plain");
+			
 			ServletFileUpload upload = new ServletFileUpload();
 			FileItemIterator iterator = upload.getItemIterator(request);
 			while (iterator.hasNext()) {
 				FileItemStream item = iterator.next();
 				if (item.isFormField()) {
+					String fieldName = item.getFieldName().toString();
 					StringWriter writer = new StringWriter();
 					IOUtils.copy(item.openStream(), writer, "UTF-8");
-					String theString = writer.toString();
-					printWriter.println(theString);
+					String fieldValue = writer.toString();
+					
+					if (fieldName.equals("email")) {
+						registerEmail = fieldValue;
+					} else if (fieldName.equals("password")) {
+						registerPassword = fieldValue;
+					} else if (fieldName.equals("confirm")) {
+						registerConfirmPassword = fieldValue;
+					}
 				} else {
-
+				
 				}
 			}
+			
+			switch (endpoint.registerUser(registerEmail, registerPassword)) {
+				case NetworkEndpoint.REGISTER_SUCCESS:
+					response.sendRedirect("/index.jsp?error=register_success");
+					break;
+				case NetworkEndpoint.REGISTER_ERROR_EMAIL_NOT_VALID:
+					response.sendRedirect("/index.jsp?error=register_invalid_email");
+					break;
+				case NetworkEndpoint.REGISTER_ERROR_EMAIL_NOT_AVAILABLE:
+					response.sendRedirect("/index.jsp?error=register_unavailable_email");
+					break;
+				case NetworkEndpoint.REGISTER_ERROR_PASSWORD_NOT_VALID:
+					response.sendRedirect("/index.jsp?error=register_invalid_password");
+					break;
+				default:
+					response.sendRedirect("/index.jsp?error=register_other_error");
+			}
+			
 			break;
 		case LOGOUT:
 			// Check if there is an existing session

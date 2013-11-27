@@ -139,10 +139,9 @@ public class NetworkServlet extends HttpServlet {
 			String registerPassword = null;
 			String registerConfirmPassword = null;
 			
-			response.setContentType("text/plain");
-			
 			ServletFileUpload upload = new ServletFileUpload();
 			FileItemIterator iterator = upload.getItemIterator(request);
+			
 			while (iterator.hasNext()) {
 				FileItemStream item = iterator.next();
 				if (item.isFormField()) {
@@ -163,18 +162,21 @@ public class NetworkServlet extends HttpServlet {
 				}
 			}
 			
-			switch (endpoint.registerUser(registerEmail, registerPassword)) {
-				case NetworkEndpoint.REGISTER_SUCCESS:
+			switch (endpoint.registerUser(registerEmail, registerPassword, registerConfirmPassword).result) {
+				case RegisterResult.REGISTER_SUCCESS:
 					response.sendRedirect("/index.jsp?error=register_success");
 					break;
-				case NetworkEndpoint.REGISTER_ERROR_EMAIL_NOT_VALID:
+				case RegisterResult.REGISTER_ERROR_EMAIL_NOT_VALID:
 					response.sendRedirect("/index.jsp?error=register_invalid_email");
 					break;
-				case NetworkEndpoint.REGISTER_ERROR_EMAIL_NOT_AVAILABLE:
+				case RegisterResult.REGISTER_ERROR_EMAIL_NOT_AVAILABLE:
 					response.sendRedirect("/index.jsp?error=register_unavailable_email");
 					break;
-				case NetworkEndpoint.REGISTER_ERROR_PASSWORD_NOT_VALID:
+				case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_VALID:
 					response.sendRedirect("/index.jsp?error=register_invalid_password");
+					break;
+				case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_MATCH:
+					response.sendRedirect("/index.jsp?error=register_password_not_match");
 					break;
 				default:
 					response.sendRedirect("/index.jsp?error=register_other_error");

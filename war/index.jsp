@@ -53,6 +53,24 @@ if (request.getParameter("error") != null) {
 	} else if (request.getParameter("error").equals("no_session")) {
 		out.print("<span><b>You are not logged in!</b></span>");
 		out.print("&nbsp;&nbsp;");
+	} else if (request.getParameter("error").equals("register_success")) {
+		out.print("<span><b>Registration was successful!</b></span>");
+		out.print("&nbsp;&nbsp;");
+	} else if (request.getParameter("error").equals("register_invalid_email")) {
+		out.print("<span><b>Your email is invalid! Please try again</b></span>");
+		out.print("&nbsp;&nbsp;");
+	} else if (request.getParameter("error").equals("register_unavailable_email")) {
+		out.print("<span><b>This email is already in use!</b></span>");
+		out.print("&nbsp;&nbsp;");
+	} else if (request.getParameter("error").equals("register_invalid_password")) {
+		out.print("<span><b>The password is invalid! Please try again</b></span>");
+		out.print("&nbsp;&nbsp;");
+	} else if (request.getParameter("error").equals("register_password_not_match")) {
+		out.print("<span><b>The passwords do not match!</b></span>");
+		out.print("&nbsp;&nbsp;");
+	} else if (request.getParameter("error").equals("register_other_error")) {
+		out.print("<span><b>Unknown error! Please try again</b></span>");
+		out.print("&nbsp;&nbsp;");
 	}
 }
 			

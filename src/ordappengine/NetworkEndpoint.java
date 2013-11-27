@@ -12,12 +12,6 @@ import com.google.api.server.spi.config.ApiNamespace;
 public class NetworkEndpoint {
 	private StorageManager storageManager;
 	private BackendSession session;
-	
-	public static final int REGISTER_SUCCESS = 0;
-	public static final int REGISTER_ERROR_EMAIL_NOT_VALID = 1;
-	public static final int REGISTER_ERROR_EMAIL_NOT_AVAILABLE = 2;
-	public static final int REGISTER_ERROR_PASSWORD_NOT_VALID = 3;
-	public static final int REGISTER_ERROR_OTHER = 4;
 
 	public NetworkEndpoint() {
 		storageManager = new DatastoreControl();
@@ -40,27 +34,35 @@ public class NetworkEndpoint {
 	}
 
 	@ApiMethod(name = "registerUser")
-	public int registerUser(@Named("emailAddress")String emailAddress, @Named("password")String password) {
+	public RegisterResult registerUser(@Named("emailAddress")String emailAddress, @Named("password")String password, @Named("confirmPassword")String confirmPassword) {
 		// Check email
 		if (emailAddress == null || !EmailValidator.getInstance().isValid(emailAddress)) {
-			return REGISTER_ERROR_EMAIL_NOT_VALID;
+			return new RegisterResult(RegisterResult.REGISTER_ERROR_EMAIL_NOT_VALID);
 		}
 		
 		if (!storageManager.isAvailable(emailAddress)) {
-			return REGISTER_ERROR_EMAIL_NOT_AVAILABLE;
+			return new RegisterResult(RegisterResult.REGISTER_ERROR_EMAIL_NOT_AVAILABLE);
 		}
 		
 		// Check password
 		if (password == null || password.isEmpty()) {
-			return REGISTER_ERROR_PASSWORD_NOT_VALID;
-		}
-
-		// Create user
-		if (storageManager.createUser(emailAddress, password, false)) {
-			return REGISTER_SUCCESS;
+			return new RegisterResult(RegisterResult.REGISTER_ERROR_PASSWORD_NOT_VALID);
 		}
 		
-		return REGISTER_ERROR_OTHER;
+		if (confirmPassword == null || confirmPassword.isEmpty()) {
+			return new RegisterResult(RegisterResult.REGISTER_ERROR_PASSWORD_NOT_VALID);
+		}
+		
+		if (!password.equals(confirmPassword)) {
+			return new RegisterResult(RegisterResult.REGISTER_ERROR_PASSWORD_NOT_MATCH);
+		}
+		
+		// Create user
+		if (storageManager.createUser(emailAddress, password, false)) {
+			return new RegisterResult(RegisterResult.REGISTER_SUCCESS);
+		}
+		
+		return new RegisterResult(RegisterResult.REGISTER_ERROR_OTHER);
 	}
 	
 	@ApiMethod(name = "setBackendSessionToken")

@@ -103,9 +103,9 @@ response.setDateHeader("Expires", 0);
 <div class="dialog" id="register-dialog">
 	<form id="register-form" method="post" action="NetworkServlet?actionIndex=2" enctype="multipart/form-data">
 			<img src="images/exit.png" onClick="closeRegistration()"/>
-			Email Address<input type="email" placeholder="email address" name="email"/>
-			Password<input type="password" placeholder="password" name="password"/>
-			Confirm Password<input type="password" placeholder="confirm password" name="confirm"/>
+			Email Address<input type="email" placeholder="Email address" name="email"/>
+			Password<input type="password" placeholder="Password" name="password"/>
+			Confirm Password<input type="password" placeholder="Confirm password" name="confirm"/>
 			Poster File<input type="file" name="file" id="file"/>
 			<input class="button" type="submit" value="Register"/>		
 	</form>

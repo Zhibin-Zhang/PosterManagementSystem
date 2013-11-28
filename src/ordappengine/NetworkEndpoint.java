@@ -1,5 +1,7 @@
 package ordappengine;
 
+import java.util.ArrayList;
+
 import javax.inject.Named;
 
 import org.apache.commons.validator.routines.EmailValidator;
@@ -24,7 +26,8 @@ public class NetworkEndpoint {
 	}
 
 	@ApiMethod(name = "signIn")
-	public BackendSession signIn(@Named("emailAddress")String emailAddress, @Named("password")String password) {
+	public BackendSession signIn(@Named("emailAddress") String emailAddress,
+			@Named("password") String password) {
 		if (emailAddress == null || password == null || emailAddress.isEmpty()
 				|| password.isEmpty()) {
 			return null;
@@ -34,39 +37,54 @@ public class NetworkEndpoint {
 	}
 
 	@ApiMethod(name = "registerUser")
-	public RegisterResult registerUser(@Named("emailAddress")String emailAddress, @Named("password")String password, @Named("confirmPassword")String confirmPassword) {
+	public RegisterResult registerUser(
+			@Named("emailAddress") String emailAddress,
+			@Named("password") String password,
+			@Named("confirmPassword") String confirmPassword) {
 		// Check email
-		if (emailAddress == null || !EmailValidator.getInstance().isValid(emailAddress)) {
-			return new RegisterResult(RegisterResult.REGISTER_ERROR_EMAIL_NOT_VALID);
+		if (emailAddress == null
+				|| !EmailValidator.getInstance().isValid(emailAddress)) {
+			return new RegisterResult(
+					RegisterResult.REGISTER_ERROR_EMAIL_NOT_VALID);
 		}
-		
+
 		if (!storageManager.isAvailable(emailAddress)) {
-			return new RegisterResult(RegisterResult.REGISTER_ERROR_EMAIL_NOT_AVAILABLE);
+			return new RegisterResult(
+					RegisterResult.REGISTER_ERROR_EMAIL_NOT_AVAILABLE);
 		}
-		
+
 		// Check password
-		if (password == null || password.isEmpty()) {
-			return new RegisterResult(RegisterResult.REGISTER_ERROR_PASSWORD_NOT_VALID);
+		if (password == null || password.isEmpty() || password.length() < 6
+				|| password.length() > 12) {
+			return new RegisterResult(
+					RegisterResult.REGISTER_ERROR_PASSWORD_NOT_VALID);
 		}
-		
+
 		if (confirmPassword == null || confirmPassword.isEmpty()) {
-			return new RegisterResult(RegisterResult.REGISTER_ERROR_PASSWORD_NOT_VALID);
+			return new RegisterResult(
+					RegisterResult.REGISTER_ERROR_PASSWORD_NOT_CONFIRMED);
 		}
-		
+
 		if (!password.equals(confirmPassword)) {
-			return new RegisterResult(RegisterResult.REGISTER_ERROR_PASSWORD_NOT_MATCH);
+			return new RegisterResult(
+					RegisterResult.REGISTER_ERROR_PASSWORD_NOT_MATCH);
 		}
-		
+
 		// Create user
 		if (storageManager.createUser(emailAddress, password, false)) {
 			return new RegisterResult(RegisterResult.REGISTER_SUCCESS);
 		}
-		
+
 		return new RegisterResult(RegisterResult.REGISTER_ERROR_OTHER);
 	}
-	
+
+	@ApiMethod(name = "getAllSubmissions")
+	public ArrayList<Submission> getAllSubmissions() {
+		return storageManager.getBlobServe(null);
+	}
+
 	@ApiMethod(name = "setBackendSessionToken")
-	public void setBackendSessionToken(@Named("token")String token) {
+	public void setBackendSessionToken(@Named("token") String token) {
 		session.token = token;
 	}
 

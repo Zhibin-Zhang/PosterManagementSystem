@@ -1,4 +1,24 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<%@ page session="false" %><%@ 
+page import="ordappengine.*,java.util.ArrayList" %><%
+
+// Anti-cache headers. see http://www.xyzws.com/JSPfaq/how-to-disable-browser-caching-for-a-specific-jsp/11
+response.setHeader("Pragma", "no-cache");
+response.setHeader("Cache-Control", "no-cache");
+response.setDateHeader("Expires", 0);
+
+// Check if session exists and is valid
+HttpSession session = request.getSession(false);
+NetworkEndpoint endpoint = new NetworkEndpoint();
+
+if (session != null) {
+	if (session.getAttribute("token") != null) {
+		endpoint.setBackendSessionToken((String)session.getAttribute("token"));
+		BackendSession backendSession = endpoint.authenticateSession();
+		
+		if (backendSession != null) {
+			if (!backendSession.isAdmin) {
+		
+%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
@@ -25,7 +45,14 @@
 			</div>		
 		</div>
 		<div id="content-pane">
+			<p align="right"><b>Welcome <%= backendSession.emailAddress %> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
 			<ul>
+<%
+
+// Here is where the list of submissions should be output
+ArrayList<Submission> submissions = backendSession.submissions;
+
+%>
 				<li>
 					<div class="list-username">submission.ptx</div>
 					<div class="list-filename">Submitted</div>
@@ -84,23 +111,30 @@
 			<a class="footer-link" href="#">ACM Club</a>
 		</div>
 		<div class="footer-content">
-			© 2013 Department of Computer Science<br>
-			100 North University Drive, Edmond, OK 73034 · (405) 974-5717 <br>
+			&copy; 2013 Department of Computer Science<br>
+			100 North University Drive, Edmond, OK 73034 &middot; (405) 974-5717 <br>
 			Designed by Stephen Staker
 		</div>
 	</div>
 </div>
-<div id="overlay"></div>
-<div id="dialog">
-	<form id="register-form">
-			<img src="images/exit.png" onClick="closeRegistration()"/>
-			Email Address<input type="email" placeholder="email address"/>
-			Password<input type="password" placeholder="password"/>
-			Confirm Password<input type="password" placeholder="confirm password"/>
-			Poster File<input type="file"/>
-			<input class="button" type="submit" value="Register"/>			
-		</form>
-</div>
 </body>
 
-</html>
+</html><%
+			} else {
+				// User is not a normal user
+				response.sendRedirect("/admin.jsp");
+			}
+		} else {
+			// Session does not exist
+			response.sendRedirect("/index.jsp?msg=no_session");
+		}
+	} else {
+		// Token is not stored in HTTP session. Logout
+		response.sendRedirect("/NetworkServlet?actionIndex=" + NetworkServlet.LOGOUT);
+	}
+} else {
+	// Session does not exist
+	response.sendRedirect("/index.jsp?msg=no_session");
+}
+
+%>

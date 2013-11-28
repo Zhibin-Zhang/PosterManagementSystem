@@ -81,46 +81,36 @@ public class NetworkServlet extends HttpServlet {
 			// Check if there is an existing session
 			session = request.getSession(false);
 
-			if (session == null) {
-				// Session does not exist. Authenticate
-				BackendSession backendSession;
-				backendSession = endpoint.signIn(emailAddress, password);
-
-				if (backendSession == null) {
-					// Authentication failed
-					response.sendRedirect("/index.jsp?error=bad_credentials");
-				} else {
-					// Authentication succeeded. Create session and store
-					// backend session token
-					session = request.getSession(true);
-					session.setAttribute("token", backendSession.token);
-
-					// Redirect the user to the list of submissions
-					if (backendSession.isAdmin) {
-						response.sendRedirect("/list.jsp");
-					} else {
-						printWriter
-								.print("This should have redirected to the normal user website");
-					}
-				}
-			} else {
-				// Session exists. Redirect the user to the appropriate site
-				System.out.println("Something");
+			// If there is an existing session, log out first
+			if (session != null) {
 				if (session.getAttribute("token") != null) {
 					endpoint.setBackendSessionToken((String) session
 							.getAttribute("token"));
-					BackendSession backendSession = endpoint
-							.authenticateSession();
+					endpoint.logout();
+				}
 
-					if (backendSession != null && backendSession.isAdmin) {
-						response.sendRedirect("/list.jsp");
-					} else {
-						printWriter
-								.print("This should have redirected to the normal user website");
-					}
+				// Invalidate HTTP session
+				session.invalidate();
+			}
+
+			// Authenticate
+			BackendSession backendSession;
+			backendSession = endpoint.signIn(emailAddress, password);
+
+			if (backendSession == null) {
+				// Authentication failed
+				response.sendRedirect("/index.jsp?msg=bad_credentials");
+			} else {
+				// Authentication succeeded. Create session and store
+				// backend session token
+				session = request.getSession(true);
+				session.setAttribute("token", backendSession.token);
+
+				// Redirect the user to the list of submissions
+				if (backendSession.isAdmin) {
+					response.sendRedirect("/admin.jsp");
 				} else {
-					printWriter
-							.print("This should have redirected to the normal user website");
+					response.sendRedirect("/user.jsp");
 				}
 			}
 
@@ -138,10 +128,10 @@ public class NetworkServlet extends HttpServlet {
 			String registerEmail = null;
 			String registerPassword = null;
 			String registerConfirmPassword = null;
-			
+
 			ServletFileUpload upload = new ServletFileUpload();
 			FileItemIterator iterator = upload.getItemIterator(request);
-			
+
 			while (iterator.hasNext()) {
 				FileItemStream item = iterator.next();
 				if (item.isFormField()) {
@@ -149,7 +139,7 @@ public class NetworkServlet extends HttpServlet {
 					StringWriter writer = new StringWriter();
 					IOUtils.copy(item.openStream(), writer, "UTF-8");
 					String fieldValue = writer.toString();
-					
+
 					if (fieldName.equals("email")) {
 						registerEmail = fieldValue;
 					} else if (fieldName.equals("password")) {
@@ -158,30 +148,34 @@ public class NetworkServlet extends HttpServlet {
 						registerConfirmPassword = fieldValue;
 					}
 				} else {
-				
+
 				}
 			}
-			
-			switch (endpoint.registerUser(registerEmail, registerPassword, registerConfirmPassword).result) {
-				case RegisterResult.REGISTER_SUCCESS:
-					response.sendRedirect("/index.jsp?error=register_success");
-					break;
-				case RegisterResult.REGISTER_ERROR_EMAIL_NOT_VALID:
-					response.sendRedirect("/index.jsp?error=register_invalid_email");
-					break;
-				case RegisterResult.REGISTER_ERROR_EMAIL_NOT_AVAILABLE:
-					response.sendRedirect("/index.jsp?error=register_unavailable_email");
-					break;
-				case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_VALID:
-					response.sendRedirect("/index.jsp?error=register_invalid_password");
-					break;
-				case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_MATCH:
-					response.sendRedirect("/index.jsp?error=register_password_not_match");
-					break;
-				default:
-					response.sendRedirect("/index.jsp?error=register_other_error");
+
+			switch (endpoint.registerUser(registerEmail, registerPassword,
+					registerConfirmPassword).result) {
+			case RegisterResult.REGISTER_SUCCESS:
+				response.sendRedirect("/index.jsp?msg=register_success");
+				break;
+			case RegisterResult.REGISTER_ERROR_EMAIL_NOT_VALID:
+				response.sendRedirect("/index.jsp?msg=register_invalid_email");
+				break;
+			case RegisterResult.REGISTER_ERROR_EMAIL_NOT_AVAILABLE:
+				response.sendRedirect("/index.jsp?msg=register_unavailable_email");
+				break;
+			case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_VALID:
+				response.sendRedirect("/index.jsp?msg=register_invalid_password");
+				break;
+			case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_CONFIRMED:
+				response.sendRedirect("/index.jsp?msg=register_password_not_confirmed");
+				break;
+			case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_MATCH:
+				response.sendRedirect("/index.jsp?msg=register_password_not_match");
+				break;
+			default:
+				response.sendRedirect("/index.jsp?msg=register_other_error");
 			}
-			
+
 			break;
 		case LOGOUT:
 			// Check if there is an existing session

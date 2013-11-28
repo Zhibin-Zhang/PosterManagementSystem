@@ -28,54 +28,32 @@ response.setDateHeader("Expires", 0);
 	
 	function showRegistration(){
 		document.getElementById("overlay").style.display = "block";
-		document.getElementById("dialog").style.display = "block";
+		document.getElementById("register-dialog").style.display = "block";
 	}
 	function closeRegistration(){
 		document.getElementById("overlay").style.display = "none";
-		document.getElementById("dialog").style.display = "none";
+		document.getElementById("register-dialog").style.display = "none";
+	}
+	function showNotification(){
+		document.getElementById("overlay").style.display = "block";
+		document.getElementById("notification-dialog").style.display = "block";
+	}
+	function closeNotification(){
+		document.getElementById("overlay").style.display = "none";
+		document.getElementById("notification-dialog").style.display = "none";
 	}
 </script>
 </head>
 
-<body>
+<body<% if (request.getParameter("msg") != null) { out.print(" onload=\"showNotification()\""); } %>>
 
 <div id="menu-wrapper">
 	<div id="menu-center">
 		<a href="index.jsp"><img alt="" src="images/whitelogo.png" /></a>
 		<div class="register" onclick="showRegistration()">Register and Submit Poster</div>
 		<form id="signin-form" method="post" action="NetworkServlet">
-			<%
-
-if (request.getParameter("error") != null) {
-	if (request.getParameter("error").equals("bad_credentials")) {
-		out.print("<span><b>The email/password combination is incorrect!</b></span>");
-		out.print("&nbsp;&nbsp;");
-	} else if (request.getParameter("error").equals("no_session")) {
-		out.print("<span><b>You are not logged in!</b></span>");
-		out.print("&nbsp;&nbsp;");
-	} else if (request.getParameter("error").equals("register_success")) {
-		out.print("<span><b>Registration was successful!</b></span>");
-		out.print("&nbsp;&nbsp;");
-	} else if (request.getParameter("error").equals("register_invalid_email")) {
-		out.print("<span><b>Your email is invalid! Please try again</b></span>");
-		out.print("&nbsp;&nbsp;");
-	} else if (request.getParameter("error").equals("register_unavailable_email")) {
-		out.print("<span><b>This email is already in use!</b></span>");
-		out.print("&nbsp;&nbsp;");
-	} else if (request.getParameter("error").equals("register_invalid_password")) {
-		out.print("<span><b>The password is invalid! Please try again</b></span>");
-		out.print("&nbsp;&nbsp;");
-	} else if (request.getParameter("error").equals("register_password_not_match")) {
-		out.print("<span><b>The passwords do not match!</b></span>");
-		out.print("&nbsp;&nbsp;");
-	} else if (request.getParameter("error").equals("register_other_error")) {
-		out.print("<span><b>Unknown error! Please try again</b></span>");
-		out.print("&nbsp;&nbsp;");
-	}
-}
-			
-			%><input name="emailAddress" type="email" placeholder="email address"/>
-			<input name="password" type="password" placeholder="password"/>
+			<input name="emailAddress" type="email" placeholder="Email address"/>
+			<input name="password" type="password" placeholder="Password"/>
 			<input class="button" type="submit" value="Sign in"/>
 			<input type="hidden" name="actionIndex" value="0"/>
 		</form>
@@ -115,14 +93,14 @@ if (request.getParameter("error") != null) {
 			<a class="footer-link" href="#">ACM Club</a>
 		</div>
 		<div class="footer-content">
-			© 2013 Department of Computer Science<br>
-			100 North University Drive, Edmond, OK 73034 · (405) 974-5717 <br>
+			&copy; 2013 Department of Computer Science<br>
+			100 North University Drive, Edmond, OK 73034 &middot; (405) 974-5717 <br>
 			Designed by Stephen Staker
 		</div>
 	</div>
 </div>
 <div id="overlay"></div>
-<div id="dialog">
+<div class="dialog" id="register-dialog">
 	<form id="register-form" method="post" action="NetworkServlet?actionIndex=2" enctype="multipart/form-data">
 			<img src="images/exit.png" onClick="closeRegistration()"/>
 			Email Address<input type="email" placeholder="email address" name="email"/>
@@ -131,6 +109,33 @@ if (request.getParameter("error") != null) {
 			Poster File<input type="file" name="file" id="file"/>
 			<input class="button" type="submit" value="Register"/>		
 	</form>
+</div>
+<div id="notification-dialog">
+	<div id="notification-area"><p><%
+	
+if (request.getParameter("msg") != null) {
+	if (request.getParameter("msg").equals("bad_credentials")) {
+		out.print("The email/password combination is incorrect! Please try again.");
+	} else if (request.getParameter("msg").equals("no_session")) {
+		out.print("You are not logged in!");
+	} else if (request.getParameter("msg").equals("register_success")) {
+		out.print("Registration was successful! Please login using your credentials.");
+	} else if (request.getParameter("msg").equals("register_invalid_email")) {
+		out.print("The email you entered is not a valid address! Please try again.");
+	} else if (request.getParameter("msg").equals("register_unavailable_email")) {
+		out.print("This email is already in use!");
+	} else if (request.getParameter("msg").equals("register_invalid_password")) {
+		out.print("The password you entered is not valid! Please try again. The password must be between 6 and 12 characters long.");
+	} else if (request.getParameter("msg").equals("register_password_not_confirmed")) {
+		out.print("You did not confirm your password! Please try again. The password must be between 6 and 12 characters long.");
+	} else if (request.getParameter("msg").equals("register_password_not_match")) {
+		out.print("The passwords you entered do not match! Please try again.");
+	} else if (request.getParameter("msg").equals("register_other_error")) {
+		out.print("An unspecified error has occurred! Please try again.");
+	}
+}
+			
+%></p><p><input class="button" type="button" value="Ok" onclick="closeNotification()" /></p></div>
 </div>
 </body>
 

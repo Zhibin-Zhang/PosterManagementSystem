@@ -8,29 +8,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.appengine.api.blobstore.UploadOptions;
-
 
 public class BlobstoreServlet extends HttpServlet{
-	private static final long serialVersionUID = 5108077643869358483L;
-	
-	
-	
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		BlobstoreService blobService = BlobstoreServiceFactory.getBlobstoreService();
-		String uploadUrl = blobService.createUploadUrl("/list.jsp");
-		
-		resp.setHeader("uploadUrl", uploadUrl);
-	}
-
-
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -59,9 +44,24 @@ public class BlobstoreServlet extends HttpServlet{
 			else{
 				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			}
-		}else{
+		}else if(req.getSession(false) != null){
+			HttpSession session = req.getSession(false);
+			String email = (String)session.getAttribute("email");
+			if(email != null){
+				StorageManager storageManager = new DatastoreControl();
+				Submission submission = new Submission();
+				submission.blobKey = blobKey;
+				submission.posterName =  posterName;
+				submission.username = email;
+				storageManager.insertPoster(email, submission);
+				resp.setStatus(HttpServletResponse.SC_OK);
+			}else{
+				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			}
+		}
+		else
+		{
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		}		
 	}
-
 }

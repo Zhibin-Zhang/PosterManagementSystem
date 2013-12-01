@@ -106,7 +106,7 @@ response.setDateHeader("Expires", 0);
 			Email Address<input type="email" placeholder="Email address" name="email"/>
 			Password<input type="password" placeholder="Password" name="password"/>
 			Confirm Password<input type="password" placeholder="Confirm password" name="confirm"/>
-			Poster File<input type="file" name="file" id="file"/>
+			Poster File<input type="file" name="uploadPoster" id="file"/>
 			<input class="button" type="submit" value="Register"/>		
 	</form>
 </div>

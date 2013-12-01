@@ -188,6 +188,7 @@ public class NetworkServlet extends HttpServlet {
 					ByteArrayContent byteArrayContent = new ByteArrayContent(item.getContentType(), data);
 					//InputStreamContent inputStreamContent = new InputStreamContent(item.getContentType(), item.openStream());
 					content.addPart(new Part(byteArrayContent));
+					//the computeLength function does not work, I guess it is the reason of throwing exception
 					//long length = MultipartContent.computeLength(content);
 					endpoint.registerUser(registerEmail, registerPassword,
 							registerConfirmPassword);
@@ -271,6 +272,7 @@ public class NetworkServlet extends HttpServlet {
 		//content.addPart(new Part(inputStreamContent));
 		GenericUrl gUpUrl = new GenericUrl(new URL(uploadUrl));
 		HttpRequest uploadPostRequest = httpRequestFactory.buildPostRequest(gUpUrl, content);
+		//Throw exceptions at here
 		HttpResponse uploadedResponse = uploadPostRequest.execute();
 		if(uploadedResponse.getStatusCode() == HttpServletResponse.SC_OK)
 			return true;

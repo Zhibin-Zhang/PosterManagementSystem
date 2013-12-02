@@ -3,6 +3,13 @@ package ordappengine;
 import com.google.appengine.api.blobstore.BlobKey;
 
 public class Submission {
+	public static final String SUBMITTED = "submitted";
+	public static final String PROCESSING = "processing";
+	public static final String PRINTED = "printed";
+	public static final String FINISHED = "finished";
+	public static final String WRONG_FORMAT_SIZE = "wrong format/size";
+	public static final String OTHER_ERRORS = "other errors";
+	
 	public String username;
 	public String posterName;
 	public String posterStatus;

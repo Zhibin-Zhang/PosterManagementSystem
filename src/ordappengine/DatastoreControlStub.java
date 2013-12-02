@@ -63,4 +63,16 @@ public class DatastoreControlStub implements StorageManager {
 		return null;
 	}
 
+	@Override
+	public boolean updateStatus(String emailAddress, Submission submission, String status) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean deleteSumission(String username, Submission submission) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

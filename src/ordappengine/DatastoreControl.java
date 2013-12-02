@@ -230,7 +230,7 @@ public class DatastoreControl implements StorageManager {
 		if(emailAddress ==null){
 			//get all submissions
 			Query query = em.createNativeQuery("SELECT * FROM User");
-			results = query.getResultList();
+			results = (List<User>)query.getResultList();
 			for(User user : results){
 				ArrayList<Submission> submissions = user.submissions;
 				for(Submission sub : submissions){
@@ -241,7 +241,7 @@ public class DatastoreControl implements StorageManager {
 		{
 			//get submissions from specific user
 			String email = emailAddress[0];
-			Query query = em.createNamedQuery("SELECT u FROM User WHERE u.name = :email");
+			Query query = em.createNativeQuery("SELECT u FROM User WHERE u.name = :email");
 			query.setParameter("email", email);
 			User user = (User)query.getSingleResult();
 			for(Submission sub : user.submissions){
@@ -249,5 +249,54 @@ public class DatastoreControl implements StorageManager {
 			}
 		}
 		return serves;
+	}
+
+	@Override
+	public boolean updateStatus(String emailAddress, Submission submission, String status) {
+		EntityManager em = EMF.get().createEntityManager();
+		User user = null;
+		try {
+			user = em.find(User.class, emailAddress);			
+			if(user != null){
+				ArrayList<Submission> submissions = user.submissions;
+				//find the submission in list
+				Submission temp = submission;
+				if(!submissions.remove(temp))
+					return false;
+				submission.setPosterStatus(status);
+				submissions.add(submission);
+				
+				user.submissions = submissions;
+			}
+			em.persist(user);
+			
+		} finally {
+			em.close();
+		}
+		
+		if(user == null)
+			return false;
+		return true;
+	}
+
+	@Override
+	public boolean deleteSumission(String emailAddress, Submission submission) {
+		EntityManager em = EMF.get().createEntityManager();
+		User user = null;
+		try {
+			user = em.find(User.class, emailAddress);			
+			if(user != null){
+				ArrayList<Submission> submissions = user.submissions;
+				//find the submission in list
+				if(!submissions.remove(submission))
+					return false;
+				user.submissions = submissions;
+			}
+			em.persist(user);
+			
+		} finally {
+			em.close();
+		}
+		return false;
 	}
 }

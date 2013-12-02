@@ -14,9 +14,13 @@ import java.util.logging.Level;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
-import javax.persistence.Query;
 
 import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.memcache.ErrorHandlers;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
@@ -224,15 +228,17 @@ public class DatastoreControl implements StorageManager {
 	@Override
 	public ArrayList<Submission> getBlobServe(String... emailAddress) {
 		//if the emailAdress is null, return all the submission addresses
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		EntityManager em = EMF.get().createEntityManager();
 		ArrayList<Submission> serves = new ArrayList<Submission>();
 		List<User> results = null;	//List of users
 		if(emailAddress ==null){
 			//get all submissions
-			Query query = em.createNativeQuery("SELECT * FROM User");
-			results = query.getResultList();
-			for(User user : results){
-				ArrayList<Submission> submissions = user.submissions;
+			Query query = new Query("User");
+			PreparedQuery pq = datastore.prepare(query);
+	
+			for(Entity user : pq.asIterable()){
+				ArrayList<Submission> submissions = (ArrayList<Submission>) user.getProperty("submissions");
 				for(Submission sub : submissions){
 					serves.add(sub);
 				}
@@ -241,12 +247,11 @@ public class DatastoreControl implements StorageManager {
 		{
 			//get submissions from specific user
 			String email = emailAddress[0];
-			Query query = em.createNamedQuery("SELECT u FROM User WHERE u.name = :email");
-			query.setParameter("email", email);
-			User user = (User)query.getSingleResult();
+			User user = em.find(User.class, email);
 			for(Submission sub : user.submissions){
 				serves.add(sub);
 			}
+			em.close();
 		}
 		return serves;
 	}

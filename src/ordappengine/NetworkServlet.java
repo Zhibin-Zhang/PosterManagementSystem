@@ -107,6 +107,9 @@ public class NetworkServlet extends HttpServlet {
 				session.setAttribute("token", backendSession.token);
 
 				// Redirect the user to the list of submissions
+				/**
+				 * Added the lines here to get the submissions before redirect. - Matt
+				 */
 				if (backendSession.isAdmin) {
 					endpoint.getAdminSubmissions();
 					response.sendRedirect("/admin.jsp");

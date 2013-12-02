@@ -95,7 +95,7 @@ public class DatastoreControl implements StorageManager {
 		try {
 			Mailer.send(user.emailAddress, "Oklahoma Research Day Poster Management System Registration Information", 
 					"Thanks for registering Oklahoma Research Day Poster Management System. Please use your email address " +
-					"to login to the system./n/nCloud 5lusions Team");
+					"to login to the system./n/nCloud 5olutions Team");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -225,6 +225,11 @@ public class DatastoreControl implements StorageManager {
 	 *  We have to use another servlet to serve the blob object. 
 	 *  @author Zhibin
 	 */
+	/**
+	 * Was running into an error where I was getting an arrayindexoutofbounds exception, so I separated this method
+	 * into two separate methods
+	 * @author Matt
+	 */
 	@Override
 	public ArrayList<Submission> getBlobServe() {
 		//if the emailAdress is null, return all the submission addresses
@@ -255,7 +260,6 @@ public class DatastoreControl implements StorageManager {
 			serves.add(sub);
 		}
 		em.close();
-	}
 	return serves;
 	}
 

@@ -103,6 +103,14 @@ public class NetworkEndpoint {
 			storageManager.logout(session.token);
 		}
 	}
+	@ApiMethod(name = "getSubmissions")
+	public void getSubmissions(@Named("emailAddress") String emailAddress){
+		session.setSubmissions(storageManager.getBlobServe(emailAddress));
+	}
+	@ApiMethod(name = "getAdminSubmissions")
+	public void getAdminSubmissions(){
+		session.setSubmissions(storageManager.getBlobServe());
+	}
 
 	@ApiMethod(name = "setStorageManager")
 	public void setStorageManager(StorageManager storageManager) {

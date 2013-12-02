@@ -108,8 +108,10 @@ public class NetworkServlet extends HttpServlet {
 
 				// Redirect the user to the list of submissions
 				if (backendSession.isAdmin) {
+					endpoint.getAdminSubmissions();
 					response.sendRedirect("/admin.jsp");
 				} else {
+					endpoint.getSubmissions(emailAddress);
 					response.sendRedirect("/user.jsp");
 				}
 			}

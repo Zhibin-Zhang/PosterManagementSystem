@@ -17,7 +17,9 @@ public interface StorageManager {
 
 	BackendSession getSessionFromCache(String sessionID);
 	
-	ArrayList<Submission> getBlobServe(String ...emailAddress);
+	ArrayList<Submission> getBlobServe(String emailAddress);
+	
+	ArrayList<Submission> getBlobServe();
 	
 	boolean updateStatus(String emailAddress, Submission submission, String status);
 	

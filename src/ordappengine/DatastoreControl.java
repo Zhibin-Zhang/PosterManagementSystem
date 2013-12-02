@@ -226,13 +226,12 @@ public class DatastoreControl implements StorageManager {
 	 *  @author Zhibin
 	 */
 	@Override
-	public ArrayList<Submission> getBlobServe(String... emailAddress) {
+	public ArrayList<Submission> getBlobServe() {
 		//if the emailAdress is null, return all the submission addresses
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		EntityManager em = EMF.get().createEntityManager();
 		ArrayList<Submission> serves = new ArrayList<Submission>();
 		List<User> results = null;	//List of users
-		if(emailAddress ==null){
 			//get all submissions
 			Query query = new Query("User");
 			PreparedQuery pq = datastore.prepare(query);
@@ -242,18 +241,22 @@ public class DatastoreControl implements StorageManager {
 				for(Submission sub : submissions){
 					serves.add(sub);
 				}
-			}
-		}else
-		{
-			//get submissions from specific user
-			String email = emailAddress[0];
-			User user = em.find(User.class, email);
-			for(Submission sub : user.submissions){
-				serves.add(sub);
-			}
-			em.close();
-		}
+			}		
 		return serves;
+	}
+	@Override
+	public ArrayList<Submission> getBlobServe(String emailAddress) {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		EntityManager em = EMF.get().createEntityManager();
+		ArrayList<Submission> serves = new ArrayList<Submission>();
+		String email = emailAddress;
+		User user = em.find(User.class, email);
+		for(Submission sub : user.submissions){
+			serves.add(sub);
+		}
+		em.close();
+	}
+	return serves;
 	}
 
 	@Override

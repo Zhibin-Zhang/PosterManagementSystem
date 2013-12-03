@@ -57,11 +57,6 @@ public class DatastoreControlStub implements StorageManager {
 		return null;
 	}
 
-	@Override
-	public ArrayList<Submission> getBlobServe(String... emailAddress) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public boolean updateStatus(String emailAddress, Submission submission, String status) {
@@ -73,6 +68,18 @@ public class DatastoreControlStub implements StorageManager {
 	public boolean deleteSumission(String username, Submission submission) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public ArrayList<Submission> getBlobServe(String emailAddress) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<Submission> getBlobServe() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

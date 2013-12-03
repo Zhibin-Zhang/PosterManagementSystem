@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"doS0mIKix6_L3_LoT-sZZjofha4/2ZSemGSd6UfP7la_-dL-8Omb2iE\"",
+ "etag": "\"doS0mIKix6_L3_LoT-sZZjofha4/5VxQrxZINpzoBjNExVFwK8-SXYY\"",
  "discoveryVersion": "v1",
  "id": "networkendpoint:v1",
  "name": "networkendpoint",
@@ -64,6 +64,15 @@
    "location": "query"
   }
  },
+ "auth": {
+  "oauth2": {
+   "scopes": {
+    "https://www.googleapis.com/auth/userinfo.email": {
+     "description": "View your email address"
+    }
+   }
+  }
+ },
  "schemas": {
   "BackendSession": {
    "id": "BackendSession",
@@ -74,6 +83,9 @@
     },
     "emailAddress": {
      "type": "string"
+    },
+    "isAdmin": {
+     "type": "boolean"
     },
     "submissions": {
      "type": "array",
@@ -95,9 +107,27 @@
     }
    }
   },
+  "RegisterResult": {
+   "id": "RegisterResult",
+   "type": "object",
+   "properties": {
+    "result": {
+     "type": "integer",
+     "format": "int32"
+    }
+   }
+  },
   "StorageManager": {
    "id": "StorageManager",
-   "type": "object"
+   "type": "object",
+   "properties": {
+    "blobServe": {
+     "type": "array",
+     "items": {
+      "$ref": "Submission"
+     }
+    }
+   }
   },
   "Submission": {
    "id": "Submission",
@@ -116,6 +146,18 @@
      "type": "string"
     }
    }
+  },
+  "SubmissionCollection": {
+   "id": "SubmissionCollection",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "Submission"
+     }
+    }
+   }
   }
  },
  "methods": {
@@ -125,12 +167,88 @@
    "httpMethod": "POST",
    "response": {
     "$ref": "BackendSession"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "getAdminSubmissions": {
+   "id": "networkendpoint.getAdminSubmissions",
+   "path": "void",
+   "httpMethod": "GET",
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "getAllSubmissions": {
+   "id": "networkendpoint.getAllSubmissions",
+   "path": "submissioncollection",
+   "httpMethod": "GET",
+   "response": {
+    "$ref": "SubmissionCollection"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "getSubmissions": {
+   "id": "networkendpoint.getSubmissions",
+   "path": "void/{emailAddress}",
+   "httpMethod": "GET",
+   "parameters": {
+    "emailAddress": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "emailAddress"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "logout": {
    "id": "networkendpoint.logout",
    "path": "logout",
-   "httpMethod": "POST"
+   "httpMethod": "POST",
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "registerUser": {
+   "id": "networkendpoint.registerUser",
+   "path": "registerUser/{emailAddress}/{password}/{confirmPassword}",
+   "httpMethod": "POST",
+   "parameters": {
+    "confirmPassword": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "emailAddress": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    },
+    "password": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "emailAddress",
+    "password",
+    "confirmPassword"
+   ],
+   "response": {
+    "$ref": "RegisterResult"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "setBackendSessionToken": {
    "id": "networkendpoint.setBackendSessionToken",
@@ -145,6 +263,9 @@
    },
    "parameterOrder": [
     "token"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
   "setStorageManager": {
@@ -154,7 +275,10 @@
    "request": {
     "$ref": "StorageManager",
     "parameterName": "resource"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "signIn": {
    "id": "networkendpoint.signIn",
@@ -178,7 +302,10 @@
    ],
    "response": {
     "$ref": "BackendSession"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   }
  }
 }

@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"doS0mIKix6_L3_LoT-sZZjofha4/2ZSemGSd6UfP7la_-dL-8Omb2iE\"",
+ "etag": "\"doS0mIKix6_L3_LoT-sZZjofha4/5VxQrxZINpzoBjNExVFwK8-SXYY\"",
  "discoveryVersion": "v1",
  "id": "networkendpoint:v1",
  "name": "networkendpoint",
@@ -62,6 +62,15 @@
    "location": "query"
   }
  },
+ "auth": {
+  "oauth2": {
+   "scopes": {
+    "https://www.googleapis.com/auth/userinfo.email": {
+     "description": "View your email address"
+    }
+   }
+  }
+ },
  "schemas": {
   "BackendSession": {
    "id": "BackendSession",
@@ -72,6 +81,9 @@
     },
     "emailAddress": {
      "type": "string"
+    },
+    "isAdmin": {
+     "type": "boolean"
     },
     "submissions": {
      "type": "array",
@@ -93,9 +105,27 @@
     }
    }
   },
+  "RegisterResult": {
+   "id": "RegisterResult",
+   "type": "object",
+   "properties": {
+    "result": {
+     "type": "integer",
+     "format": "int32"
+    }
+   }
+  },
   "StorageManager": {
    "id": "StorageManager",
-   "type": "object"
+   "type": "object",
+   "properties": {
+    "blobServe": {
+     "type": "array",
+     "items": {
+      "$ref": "Submission"
+     }
+    }
+   }
   },
   "Submission": {
    "id": "Submission",
@@ -114,6 +144,18 @@
      "type": "string"
     }
    }
+  },
+  "SubmissionCollection": {
+   "id": "SubmissionCollection",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "Submission"
+     }
+    }
+   }
   }
  },
  "methods": {
@@ -121,10 +163,77 @@
    "id": "networkendpoint.authenticateSession",
    "returns": {
     "$ref": "BackendSession"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "networkendpoint.getAdminSubmissions": {
+   "id": "networkendpoint.getAdminSubmissions",
+   "allowGet": true,
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "networkendpoint.getAllSubmissions": {
+   "id": "networkendpoint.getAllSubmissions",
+   "allowGet": true,
+   "returns": {
+    "$ref": "SubmissionCollection"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "networkendpoint.getSubmissions": {
+   "id": "networkendpoint.getSubmissions",
+   "allowGet": true,
+   "parameters": {
+    "emailAddress": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "emailAddress"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "networkendpoint.logout": {
-   "id": "networkendpoint.logout"
+   "id": "networkendpoint.logout",
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "networkendpoint.registerUser": {
+   "id": "networkendpoint.registerUser",
+   "parameters": {
+    "confirmPassword": {
+     "type": "string",
+     "required": true
+    },
+    "emailAddress": {
+     "type": "string",
+     "required": true
+    },
+    "password": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "emailAddress",
+    "password",
+    "confirmPassword"
+   ],
+   "returns": {
+    "$ref": "RegisterResult"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   },
   "networkendpoint.setBackendSessionToken": {
    "id": "networkendpoint.setBackendSessionToken",
@@ -136,6 +245,9 @@
    },
    "parameterOrder": [
     "token"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
   "networkendpoint.setStorageManager": {
@@ -147,6 +259,9 @@
    },
    "parameterOrder": [
     "resource"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
   "networkendpoint.signIn": {
@@ -167,7 +282,10 @@
    ],
    "returns": {
     "$ref": "BackendSession"
-   }
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
   }
  }
 }

@@ -78,6 +78,21 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "networkendpoint.getAdminSubmissions" : {
+      "path" : "void",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.getAdminSubmissions",
+      "request" : {
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
     "networkendpoint.logout" : {
       "path" : "logout",
       "httpMethod" : "POST",
@@ -136,6 +151,27 @@
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "networkendpoint.getSubmissions" : {
+      "path" : "void/{emailAddress}",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.getSubmissions",
+      "request" : {
+        "parameters" : {
+          "emailAddress" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
       }
     },
     "networkendpoint.signIn" : {
@@ -233,6 +269,12 @@
         "id" : "StorageManager",
         "type" : "object",
         "properties" : {
+          "blobServe" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "Submission"
+            }
+          }
         }
       },
       "RegisterResult" : {
@@ -258,6 +300,8 @@
           "$ref" : "BackendSession"
         }
       },
+      "ordappengine.NetworkEndpoint.getAdminSubmissions" : {
+      },
       "ordappengine.NetworkEndpoint.logout" : {
       },
       "ordappengine.NetworkEndpoint.setStorageManager" : {
@@ -269,6 +313,8 @@
         "response" : {
           "$ref" : "RegisterResult"
         }
+      },
+      "ordappengine.NetworkEndpoint.getSubmissions" : {
       },
       "ordappengine.NetworkEndpoint.signIn" : {
         "response" : {

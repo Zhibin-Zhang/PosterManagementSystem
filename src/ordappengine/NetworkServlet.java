@@ -1,6 +1,9 @@
 package ordappengine;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -15,6 +18,16 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.impl.client.HttpClientBuilder;
+
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 
 public class NetworkServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -130,9 +143,29 @@ public class NetworkServlet extends HttpServlet {
 
 			break;
 		case UPLOADPOSTER:
+			// Check if there is an existing session
+			session = request.getSession(false);
+
+			// If there is an existing session, log out first
+			if (session != null) {
+				if (session.getAttribute("token") != null) {
+					endpoint.setBackendSessionToken((String) session
+							.getAttribute("token"));
+					endpoint.logout();
+				}
+
+				// Invalidate HTTP session
+				session.invalidate();
+			}
+
+			// Obtain registration information
 			String registerEmail = null;
 			String registerPassword = null;
 			String registerConfirmPassword = null;
+			ByteArrayBody file = null;
+
+			boolean validFile = true;
+			boolean registerSuccessful = false;
 
 			ServletFileUpload upload = new ServletFileUpload();
 			FileItemIterator iterator = upload.getItemIterator(request);
@@ -153,14 +186,47 @@ public class NetworkServlet extends HttpServlet {
 						registerConfirmPassword = fieldValue;
 					}
 				} else {
+					// Validate the type file
+					if (!item.getContentType().equals("image/jpeg")) {
+						validFile = false;
+						break;
+					}
+					
+					// Read the file into a ByteArrayOutputStream:
+					// http://stackoverflow.com/questions/9375697/process-binary-file-in-java-using-fileitemstream
+					InputStream is = new BufferedInputStream(item.openStream());
+					ByteArrayOutputStream out = new ByteArrayOutputStream();
 
+					try {
+						out = new ByteArrayOutputStream();
+						int data = -1;
+						while ((data = is.read()) != -1) {
+							out.write(data);
+						}
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+					} finally {
+						out.flush();
+						is.close();
+						out.close();
+					}
+
+					// Put the file in a ByteArrayBody for later
+					file = new ByteArrayBody(out.toByteArray(), item.getName());
 				}
 			}
 
+			if (!validFile) {
+				response.sendRedirect("/index.jsp?msg=register_invalid_file");
+				break;
+			}
+			
+			// Create user first
 			switch (endpoint.registerUser(registerEmail, registerPassword,
 					registerConfirmPassword).result) {
 			case RegisterResult.REGISTER_SUCCESS:
 				response.sendRedirect("/index.jsp?msg=register_success");
+				registerSuccessful = true;
 				break;
 			case RegisterResult.REGISTER_ERROR_EMAIL_NOT_VALID:
 				response.sendRedirect("/index.jsp?msg=register_invalid_email");
@@ -179,6 +245,32 @@ public class NetworkServlet extends HttpServlet {
 				break;
 			default:
 				response.sendRedirect("/index.jsp?msg=register_other_error");
+			}
+
+			// If the user was created, upload the file to blobstore
+			if (registerSuccessful) {
+				// First authenticate to create a session
+				BackendSession registerSession;
+				registerSession = endpoint.signIn(registerEmail,
+						registerPassword);
+
+				if (registerSession != null) {
+					// Authentication succeeded. Create session and store
+					// backend session token
+					session = request.getSession(true);
+					session.setAttribute("token", registerSession.token);
+
+					try {
+						uploadPoster(request, registerSession.getToken(), file);
+					} catch (Exception e) {
+					}
+
+					// Redirect the user to the list of submissions
+					response.sendRedirect("/user.jsp");
+				} else {
+					// Authentication failed for some reason
+					response.sendRedirect("/index.jsp?msg=register_authentication_error");
+				}
 			}
 
 			break;
@@ -201,4 +293,38 @@ public class NetworkServlet extends HttpServlet {
 			break;
 		}
 	}
+
+	private synchronized boolean uploadPoster(HttpServletRequest request,
+			String sessionID, ByteArrayBody body) throws Exception {
+		// Obtain the upload URL
+		BlobstoreService blobService = BlobstoreServiceFactory
+				.getBlobstoreService();
+		String uploadUrl = blobService.createUploadUrl("/upload");
+
+		// Build a POST request to that URL
+		// http://stackoverflow.com/questions/5071568/multi-part-post-with-file-and-string-in-httpclient-4-1
+		HttpPost post = new HttpPost(uploadUrl);
+
+		MultipartEntityBuilder entity = MultipartEntityBuilder.create();
+		entity.addTextBody("sessionid", sessionID);
+		entity.addPart("uploadPoster", body);
+
+		post.setEntity(entity.build());
+
+		// Send the request
+		HttpClient client = HttpClientBuilder.create().build();
+		HttpResponse response = null;
+
+		try {
+			response = client.execute(post);
+			System.out.println(response);
+		} catch (ClientProtocolException e) {
+			return false;
+		} catch (IOException e) {
+			return false;
+		}
+
+		return true;
+	}
+
 }

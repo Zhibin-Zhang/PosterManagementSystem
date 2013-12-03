@@ -24,6 +24,22 @@
    <param-value>ordappengine.NetworkEndpoint</param-value>
   </init-param>
  </servlet>
+ <servlet>
+     <servlet-name>UploadUrlServlet</servlet-name>
+     <servlet-class>ordappengine.BlobstoreUrlServlet</servlet-class>
+ </servlet>
+ <servlet-mapping>
+     <servlet-name>UploadUrlServlet</servlet-name>
+     <url-pattern>/upurl</url-pattern>
+ </servlet-mapping>
+ <servlet>
+     <servlet-name>UploadingServlet</servlet-name>
+     <servlet-class>ordappengine.BlobstoreServlet</servlet-class>
+ </servlet>
+ <servlet-mapping>
+     <servlet-name>UploadingServlet</servlet-name>
+     <url-pattern>/upload</url-pattern>
+ </servlet-mapping>
  <servlet-mapping>
   <servlet-name>SystemServiceServlet</servlet-name>
   <url-pattern>/_ah/spi/*</url-pattern>

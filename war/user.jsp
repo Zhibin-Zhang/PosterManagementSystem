@@ -28,6 +28,24 @@ if (session != null) {
 <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
 <title>Computer Science</title>
+<script type="text/javascript">
+	function showRegistration(){
+		document.getElementById("overlay").style.display = "block";
+		document.getElementById("register-dialog").style.display = "block";
+	}
+	function closeRegistration(){
+		document.getElementById("overlay").style.display = "none";
+		document.getElementById("register-dialog").style.display = "none";
+	}
+	function showNotification(){
+		document.getElementById("overlay").style.display = "block";
+		document.getElementById("notification-dialog").style.display = "block";
+	}
+	function closeNotification(){
+		document.getElementById("overlay").style.display = "none";
+		document.getElementById("notification-dialog").style.display = "none";
+	}
+</script>
 </head>
 
 <body>
@@ -46,6 +64,7 @@ if (session != null) {
 		</div>
 		<div id="content-pane">
 			<p align="right"><b>Welcome <%= backendSession.emailAddress %> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
+			<p align="right"><input type="button" class="button" value="Upload Poster" onclick="showRegistration()"></p>
 			<ul>
 <%
 
@@ -116,6 +135,14 @@ ArrayList<Submission> submissions = backendSession.submissions;
 			Designed by Stephen Staker
 		</div>
 	</div>
+</div>
+<div id="overlay"></div>
+<div class="dialog" id="register-dialog">
+	<form id="register-form" method="post" action="NetworkServlet?actionIndex=<% out.print(NetworkServlet.UPLOADPOSTER); %>" enctype="multipart/form-data">
+			<img src="images/exit.png" onClick="closeRegistration()"/>
+			Poster File<input type="file" name="uploadPoster" id="file"/>
+			<input class="button" type="submit" value="Upload Poster"/>		
+	</form>
 </div>
 </body>
 

@@ -1,5 +1,7 @@
 package ordappengine;
 
+import java.io.Serializable;
+
 import com.google.appengine.api.blobstore.BlobKey;
 
 public class Submission {

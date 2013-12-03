@@ -83,6 +83,7 @@ public class NetworkServlet extends HttpServlet {
 		String emailAddress = "";
 
 		NetworkEndpoint endpoint = new NetworkEndpoint();
+		BackendSession backendSession;
 		HttpSession session;
 
 		switch (actionIndex) {
@@ -107,7 +108,6 @@ public class NetworkServlet extends HttpServlet {
 			}
 
 			// Authenticate
-			BackendSession backendSession;
 			backendSession = endpoint.signIn(emailAddress, password);
 
 			if (backendSession == null) {
@@ -121,7 +121,8 @@ public class NetworkServlet extends HttpServlet {
 
 				// Redirect the user to the list of submissions
 				/**
-				 * Added the lines here to get the submissions before redirect. - Matt
+				 * Added the lines here to get the submissions before redirect.
+				 * - Matt
 				 */
 				if (backendSession.isAdmin) {
 					endpoint.getAdminSubmissions();
@@ -133,31 +134,37 @@ public class NetworkServlet extends HttpServlet {
 			}
 
 			break;
-		case REGISTER:
-			// It seems like this part is ignored after click the register
-			// button --Zhibin
-			emailAddress = request.getParameter("emailAddress");
-			password = request.getParameter("password");
-			printWriter.print("REGISTER CALLED WIT" + emailAddress + " "
-					+ password);
-
-			break;
 		case UPLOADPOSTER:
+			boolean registerFirst = true;
+			
 			// Check if there is an existing session
 			session = request.getSession(false);
 
-			// If there is an existing session, log out first
+			// If there is an existing session, make sure it's valid
+			backendSession = null;
+			
 			if (session != null) {
 				if (session.getAttribute("token") != null) {
-					endpoint.setBackendSessionToken((String) session
-							.getAttribute("token"));
-					endpoint.logout();
+					endpoint.setBackendSessionToken((String)session.getAttribute("token"));
+					backendSession = endpoint.authenticateSession();
+					
+					if (backendSession != null) {
+						if (!backendSession.isAdmin) {
+							registerFirst = false;
+						} else {
+							// User is not a normal user
+							response.sendRedirect("/admin.jsp");
+						}
+					} else {
+						// Session does not exist
+						response.sendRedirect("/index.jsp?msg=no_session");
+					}
+				} else {
+					// Token is not stored in HTTP session. Logout
+					response.sendRedirect("/NetworkServlet?actionIndex=" + NetworkServlet.LOGOUT);
 				}
-
-				// Invalidate HTTP session
-				session.invalidate();
 			}
-
+			
 			// Obtain registration information
 			String registerEmail = null;
 			String registerPassword = null;
@@ -187,11 +194,17 @@ public class NetworkServlet extends HttpServlet {
 					}
 				} else {
 					// Validate the type file
-					if (!item.getContentType().equals("image/jpeg")) {
+					if (!item.getContentType().equals("image/jpeg")
+							&& !item.getContentType().equals(
+									"application/vnd.ms-powerpoint")
+							&& !item.getContentType()
+									.equals("application/vnd.openxmlformats-officedocument.presentationml.presentation")
+							&& !item.getContentType().equals("application/pdf")
+							&& !item.getContentType().equals("image/png")) {
 						validFile = false;
 						break;
 					}
-					
+
 					// Read the file into a ByteArrayOutputStream:
 					// http://stackoverflow.com/questions/9375697/process-binary-file-in-java-using-fileitemstream
 					InputStream is = new BufferedInputStream(item.openStream());
@@ -213,6 +226,12 @@ public class NetworkServlet extends HttpServlet {
 
 					// Put the file in a ByteArrayBody for later
 					file = new ByteArrayBody(out.toByteArray(), item.getName());
+					
+					// Check the file size
+					if (out.toByteArray().length > 1024 * 1024) {
+						validFile = false;
+						break;
+					}
 				}
 			}
 
@@ -220,48 +239,49 @@ public class NetworkServlet extends HttpServlet {
 				response.sendRedirect("/index.jsp?msg=register_invalid_file");
 				break;
 			}
-			
-			// Create user first
-			switch (endpoint.registerUser(registerEmail, registerPassword,
-					registerConfirmPassword).result) {
-			case RegisterResult.REGISTER_SUCCESS:
-				response.sendRedirect("/index.jsp?msg=register_success");
-				registerSuccessful = true;
-				break;
-			case RegisterResult.REGISTER_ERROR_EMAIL_NOT_VALID:
-				response.sendRedirect("/index.jsp?msg=register_invalid_email");
-				break;
-			case RegisterResult.REGISTER_ERROR_EMAIL_NOT_AVAILABLE:
-				response.sendRedirect("/index.jsp?msg=register_unavailable_email");
-				break;
-			case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_VALID:
-				response.sendRedirect("/index.jsp?msg=register_invalid_password");
-				break;
-			case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_CONFIRMED:
-				response.sendRedirect("/index.jsp?msg=register_password_not_confirmed");
-				break;
-			case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_MATCH:
-				response.sendRedirect("/index.jsp?msg=register_password_not_match");
-				break;
-			default:
-				response.sendRedirect("/index.jsp?msg=register_other_error");
+
+			if (registerFirst) {
+				// Create user first
+				switch (endpoint.registerUser(registerEmail, registerPassword,
+						registerConfirmPassword).result) {
+				case RegisterResult.REGISTER_SUCCESS:
+					response.sendRedirect("/index.jsp?msg=register_success");
+					registerSuccessful = true;
+					break;
+				case RegisterResult.REGISTER_ERROR_EMAIL_NOT_VALID:
+					response.sendRedirect("/index.jsp?msg=register_invalid_email");
+					break;
+				case RegisterResult.REGISTER_ERROR_EMAIL_NOT_AVAILABLE:
+					response.sendRedirect("/index.jsp?msg=register_unavailable_email");
+					break;
+				case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_VALID:
+					response.sendRedirect("/index.jsp?msg=register_invalid_password");
+					break;
+				case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_CONFIRMED:
+					response.sendRedirect("/index.jsp?msg=register_password_not_confirmed");
+					break;
+				case RegisterResult.REGISTER_ERROR_PASSWORD_NOT_MATCH:
+					response.sendRedirect("/index.jsp?msg=register_password_not_match");
+					break;
+				default:
+					response.sendRedirect("/index.jsp?msg=register_other_error");
+				}
 			}
 
 			// If the user was created, upload the file to blobstore
-			if (registerSuccessful) {
+			if (registerFirst && registerSuccessful) {
 				// First authenticate to create a session
-				BackendSession registerSession;
-				registerSession = endpoint.signIn(registerEmail,
+				backendSession = endpoint.signIn(registerEmail,
 						registerPassword);
 
-				if (registerSession != null) {
+				if (backendSession != null) {
 					// Authentication succeeded. Create session and store
 					// backend session token
 					session = request.getSession(true);
-					session.setAttribute("token", registerSession.token);
+					session.setAttribute("token", backendSession.token);
 
 					try {
-						uploadPoster(request, registerSession.getToken(), file);
+						uploadPoster(request, backendSession.getToken(), file);
 					} catch (Exception e) {
 					}
 
@@ -271,6 +291,16 @@ public class NetworkServlet extends HttpServlet {
 					// Authentication failed for some reason
 					response.sendRedirect("/index.jsp?msg=register_authentication_error");
 				}
+			} else if (!registerFirst) {
+				// If we get to this point, we know there is an existing valid session
+				// Just upload poster
+				try {
+					uploadPoster(request, backendSession.getToken(), file);
+				} catch (Exception e) {
+				}
+				
+				// Redirect the user to the list of submissions
+				response.sendRedirect("/user.jsp");
 			}
 
 			break;

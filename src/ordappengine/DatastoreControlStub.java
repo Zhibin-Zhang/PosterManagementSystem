@@ -2,6 +2,8 @@ package ordappengine;
 
 import java.util.ArrayList;
 
+import com.google.appengine.api.blobstore.BlobKey;
+
 public class DatastoreControlStub implements StorageManager {
 
 	@Override
@@ -11,7 +13,7 @@ public class DatastoreControlStub implements StorageManager {
 	}
 
 	@Override
-	public boolean insertPoster(String emailAddress, Submission submission) {
+	public boolean insertPoster(Submission submission) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -59,13 +61,13 @@ public class DatastoreControlStub implements StorageManager {
 
 
 	@Override
-	public boolean updateStatus(String emailAddress, Submission submission, String status) {
+	public boolean updateStatus(BlobKey blobKey, String status) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean deleteSumission(String username, Submission submission) {
+	public boolean deleteSumission(BlobKey blobKey) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -82,4 +84,11 @@ public class DatastoreControlStub implements StorageManager {
 		return null;
 	}
 
+	@Override
+	public boolean editUser(String emailAddress, String password) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
+

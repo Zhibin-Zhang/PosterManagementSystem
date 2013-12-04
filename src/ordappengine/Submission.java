@@ -2,8 +2,13 @@ package ordappengine;
 
 import java.io.Serializable;
 
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import com.google.appengine.api.blobstore.BlobKey;
 
+@Entity(name = "submission")
 public class Submission {
 	public static final String SUBMITTED = "submitted";
 	public static final String PROCESSING = "processing";
@@ -12,10 +17,15 @@ public class Submission {
 	public static final String WRONG_FORMAT_SIZE = "wrong format/size";
 	public static final String OTHER_ERRORS = "other errors";
 	
-	public String username;
-	public String posterName;
-	public String posterStatus;
+	@Id
 	public BlobKey blobKey;
+	@Basic
+	public String username;
+	@Basic
+	public String posterName;
+	@Basic
+	public String posterStatus = Submission.SUBMITTED;
+	
 	public String getUsername() {
 		return username;
 	}

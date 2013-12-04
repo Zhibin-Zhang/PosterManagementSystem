@@ -19,12 +19,4 @@ public class User implements Serializable {
 	public String password;
 	@Basic
 	public boolean isAdmin = false;
-	@Basic
-	public ArrayList<Submission> submissions;
-
-	public void addSubmission(Submission submission) {
-		if (submissions == null)
-			submissions = new ArrayList<Submission>();
-		submissions.add(submission);
-	}
 }

@@ -206,6 +206,9 @@
         "id" : "Submission",
         "type" : "object",
         "properties" : {
+          "blobKey" : {
+            "$ref" : "BlobKey"
+          },
           "username" : {
             "type" : "string"
           },
@@ -214,9 +217,6 @@
           },
           "posterStatus" : {
             "type" : "string"
-          },
-          "blobKey" : {
-            "$ref" : "BlobKey"
           }
         }
       },

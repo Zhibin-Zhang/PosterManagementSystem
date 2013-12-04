@@ -2,10 +2,12 @@ package ordappengine;
 
 import java.util.ArrayList;
 
+import com.google.appengine.api.blobstore.BlobKey;
+
 public interface StorageManager {
 	boolean isAvailable(String emailAddress);
 
-	boolean insertPoster(String emailAddress, Submission submission);
+	boolean insertPoster(Submission submission);
 
 	BackendSession authenticateUser(String emailAddress, String password);
 
@@ -21,8 +23,10 @@ public interface StorageManager {
 	
 	ArrayList<Submission> getBlobServe();
 	
-	boolean updateStatus(String emailAddress, Submission submission, String status);
+	boolean updateStatus(BlobKey blobKey, String status);
 	
-	boolean deleteSumission(String emailAddress, Submission submission);
+	boolean deleteSumission(BlobKey blobKey);
+	
+	boolean editUser(String emailAddress, String password);
 	
 }

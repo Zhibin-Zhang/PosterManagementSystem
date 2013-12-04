@@ -38,7 +38,7 @@ public class BlobstoreServlet extends HttpServlet{
 				submission.blobKey = blobKey;
 				submission.posterName =  posterName;
 				submission.username = emailAddress;
-				storageManager.insertPoster(emailAddress, submission);
+				storageManager.insertPoster(submission);
 				resp.setStatus(HttpServletResponse.SC_OK);
 			}
 			else{
@@ -53,7 +53,7 @@ public class BlobstoreServlet extends HttpServlet{
 				submission.blobKey = blobKey;
 				submission.posterName =  posterName;
 				submission.username = email;
-				storageManager.insertPoster(email, submission);
+				storageManager.insertPoster(submission);
 				resp.setStatus(HttpServletResponse.SC_OK);
 			}else{
 				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

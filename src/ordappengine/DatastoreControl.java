@@ -19,6 +19,7 @@ import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.memcache.ErrorHandlers;
@@ -56,7 +57,7 @@ public class DatastoreControl implements StorageManager {
 		if (user != null && user.password.equals(password)) {
 			BackendSession session = new BackendSession(generateSessionToken());
 			session.isAdmin = user.isAdmin;
-			session.submissions = user.submissions;
+			//session.submissions = user.submissions;
 			session.emailAddress = user.emailAddress;
 			String cacheKey = session.token;
 			// Using the synchronous cache
@@ -105,15 +106,10 @@ public class DatastoreControl implements StorageManager {
 	}
 
 	@Override
-	public boolean insertPoster(String emailAddress, Submission submission) {
+	public boolean insertPoster(Submission submission) {
 		EntityManager em = EMF.get().createEntityManager();
-		User user = null;
 		try {
-			user = em.find(User.class, emailAddress);
-			if (user == null)
-				return false;
-			user.addSubmission(submission);
-			em.persist(user);
+			em.persist(submission);
 		} finally {
 			em.close();
 		}
@@ -232,83 +228,101 @@ public class DatastoreControl implements StorageManager {
 	 */
 	@Override
 	public ArrayList<Submission> getBlobServe() {
-		//if the emailAdress is null, return all the submission addresses
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		EntityManager em = EMF.get().createEntityManager();
+		// if the emailAdress is null, return all the submission addresses
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		
 		ArrayList<Submission> serves = new ArrayList<Submission>();
-		List<User> results = null;	//List of users
-			//get all submissions
-			Query query = new Query("User");
-			PreparedQuery pq = datastore.prepare(query);
-	
-			for(Entity user : pq.asIterable()){
-				ArrayList<Submission> submissions = (ArrayList<Submission>) user.getProperty("submissions");
-				for(Submission sub : submissions){
-					serves.add(sub);
-				}
-			}		
+		
+		// get all submissions
+		Query query = new Query("Submission");
+		PreparedQuery pq = datastore.prepare(query);
+		for(Entity entity : pq.asIterable()){
+			String email = (String) entity.getProperty("username");
+			String posterName = (String) entity.getProperty("posterName");
+			String status = (String) entity.getProperty("posterStatus");
+			BlobKey blobKey = (BlobKey) entity.getProperty("blobKey");
+			Submission sub = new Submission();
+			sub.username = email;
+			sub.posterName = posterName;
+			sub.posterStatus = status;
+			sub.blobKey = blobKey;
+			serves.add(sub);
+		}
+		
 		return serves;
 	}
 	@Override
 	public ArrayList<Submission> getBlobServe(String emailAddress) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		EntityManager em = EMF.get().createEntityManager();
+		
+		Query query = new Query("submission").addFilter("username", Query.FilterOperator.EQUAL, emailAddress);
+		PreparedQuery pq = datastore.prepare(query);
 		ArrayList<Submission> serves = new ArrayList<Submission>();
-		String email = emailAddress;
-		User user = em.find(User.class, email);
-		for(Submission sub : user.submissions){
+		for(Entity entity : pq.asIterable()){
+			String email = (String) entity.getProperty("username");
+			String posterName = (String) entity.getProperty("posterName");
+			String status = (String) entity.getProperty("posterStatus");
+			BlobKey blobKey = (BlobKey) entity.getProperty("blobKey");
+			Submission sub = new Submission();
+			sub.username = email;
+			sub.posterName = posterName;
+			sub.posterStatus = status;
+			sub.blobKey = blobKey;
 			serves.add(sub);
 		}
-		em.close();
 	return serves;
 	}
 
 	@Override
-	public boolean updateStatus(String emailAddress, Submission submission, String status) {
+	public boolean updateStatus(BlobKey blobKey, String status) {
 		EntityManager em = EMF.get().createEntityManager();
-		User user = null;
+		Submission submission = null;
 		try {
-			user = em.find(User.class, emailAddress);			
-			if(user != null){
-				ArrayList<Submission> submissions = user.submissions;
-				//find the submission in list
-				Submission temp = submission;
-				if(!submissions.remove(temp))
-					return false;
-				submission.setPosterStatus(status);
-				submissions.add(submission);
-				
-				user.submissions = submissions;
+			submission = em.find(Submission.class, blobKey);			
+			if(submission != null){
+				submission.posterStatus = status;
 			}
-			em.persist(user);
+			em.persist(submission);
 			
 		} finally {
 			em.close();
 		}
 		
-		if(user == null)
+		if(submission == null)
 			return false;
 		return true;
 	}
 
 	@Override
-	public boolean deleteSumission(String emailAddress, Submission submission) {
+	public boolean deleteSumission(BlobKey blobKey) {
 		EntityManager em = EMF.get().createEntityManager();
-		User user = null;
+		Submission submission = null;
 		try {
-			user = em.find(User.class, emailAddress);			
-			if(user != null){
-				ArrayList<Submission> submissions = user.submissions;
-				//find the submission in list
-				if(!submissions.remove(submission))
-					return false;
-				user.submissions = submissions;
-			}
-			em.persist(user);
-			
+			submission = em.find(Submission.class, blobKey);			
+			if(submission != null)
+				em.remove(submission);			
 		} finally {
 			em.close();
 		}
+		if(submission != null)
+			return true;
+		return false;
+	}
+
+	@Override
+	public boolean editUser(String emailAddress, String password) {
+		EntityManager em = EMF.get().createEntityManager();
+		User user = null;
+		try{
+			user = em.find(User.class, emailAddress);
+			if(user != null)
+				user.password = password;
+		} finally{
+			em.clear();
+		}
+		if(user != null)
+			return true;
 		return false;
 	}
 }

@@ -255,8 +255,8 @@ public class DatastoreControl implements StorageManager {
 	@Override
 	public ArrayList<Submission> getBlobServe(String emailAddress) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		
-		Query query = new Query("submission").addFilter("username", Query.FilterOperator.EQUAL, emailAddress);
+		Query.FilterPredicate filter = new Query.FilterPredicate("username",Query.FilterOperator.EQUAL, emailAddress);
+		Query query = new Query("Submission").setFilter(filter);
 		PreparedQuery pq = datastore.prepare(query);
 		ArrayList<Submission> serves = new ArrayList<Submission>();
 		for(Entity entity : pq.asIterable()){

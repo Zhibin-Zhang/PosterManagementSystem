@@ -241,12 +241,12 @@ public class DatastoreControl implements StorageManager {
 			String email = (String) entity.getProperty("username");
 			String posterName = (String) entity.getProperty("posterName");
 			String status = (String) entity.getProperty("posterStatus");
-			BlobKey blobKey = (BlobKey) entity.getProperty("blobKey");
+			String blobKey = (String) entity.getProperty("blobKey");
 			Submission sub = new Submission();
 			sub.username = email;
 			sub.posterName = posterName;
 			sub.posterStatus = status;
-			sub.blobKey = blobKey.getKeyString();
+			sub.blobKey = blobKey;
 			serves.add(sub);
 		}
 		
@@ -263,12 +263,12 @@ public class DatastoreControl implements StorageManager {
 			String email = (String) entity.getProperty("username");
 			String posterName = (String) entity.getProperty("posterName");
 			String status = (String) entity.getProperty("posterStatus");
-			BlobKey blobKey = (BlobKey) entity.getProperty("blobKey");
+			String blobKey = (String) entity.getProperty("blobKey");
 			Submission sub = new Submission();
 			sub.username = email;
 			sub.posterName = posterName;
 			sub.posterStatus = status;
-			sub.blobKey = blobKey.getKeyString();
+			sub.blobKey = blobKey;
 			serves.add(sub);
 		}
 	return serves;

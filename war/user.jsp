@@ -62,60 +62,33 @@ if (session != null) {
 				These are instructions to use our system. You do not know how to use the system so these are instructions to use the system.
 			</div>		
 		</div>
+		<%
+// Here is where the list of submissions should be output
+  ArrayList<Submission> submissions = endpoint.getSubmissions(backendSession.emailAddress);
+%>
 		<div id="content-pane">
-			<p align="right"><b>Welcome <%= backendSession.emailAddress %> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
+			<p align="right"><b>Welcome <%= backendSession.emailAddress %> You have <%= submissions.size()%>(<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
 			<p align="right"><input type="button" class="button" value="Upload Poster" onclick="showRegistration()"></p>
 			<ul>
-<%
-
-// Here is where the list of submissions should be output
-ArrayList<Submission> submissions = backendSession.submissions;
-
-%>
-				<li>
-					<div class="list-username">submission.ptx</div>
-					<div class="list-filename">Submitted</div>
-					
-					<form>
-						<input class="button" type="submit" value="Delete"/>
-					</form>	
-					<form>
-						<input class="button" type="submit" value="Download"/>
-					</form>
-				</li>
-				<li>
-					<div class="list-username">outposter.ptx</div>
-					<div class="list-filename">Processing</div>
-					
-					<form>
-						<input class="button" type="submit" value="Delete"/>
-					</form>	
-					<form>
-						<input class="button" type="submit" value="Download"/>
-					</form>
-				</li>
-				<li>
-					<div class="list-username">poster1.ptx</div>
-					<div class="list-filename">Processing</div>
-					
-					<form>
-						<input class="button" type="submit" value="Delete"/>
-					</form>	
-					<form>
-						<input class="button" type="submit" value="Download"/>
-					</form>
-				</li>
-				<li>
-					<div class="list-username">ord.pdf</div>
-					<div class="list-filename">Submitted</div>
-					
-					<form>
-						<input class="button" type="submit" value="Delete"/>
-					</form>	
-					<form>
-						<input class="button" type="submit" value="Download"/>
-					</form>
-				</li>
+			
+	<%if(submissions.size()>0){
+	 for(int i =0; i< submissions.size(); i++){%>
+		<li>
+			<div class="list-username"><%=submissions.get(i).posterName%></div>
+			<div class="list-filename"><%=submissions.get(i).posterStatus%></div>
+				<form>
+					<input class="button" type="submit" value="Delete"/>
+				</form>	
+				<form>
+					<input class="button" type="submit" value="Download"/>
+				</form>
+		</li>
+	<%}
+	}else{%>	
+	  <li>
+	    <div class="list-username">You have no submissions, try using the upload button.</div>
+	  </li>
+	  <%}%>
 			</ul>
 		</div>
 	</div>

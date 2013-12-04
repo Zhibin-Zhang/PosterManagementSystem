@@ -124,13 +124,14 @@ public class NetworkServlet extends HttpServlet {
 				// Redirect the user to the list of submissions
 				/**
 				 * Added the lines here to get the submissions before redirect.
+				 * no longer need these lines, pulling from the endpoint on the webpage
 				 * - Matt
 				 */
 				if (backendSession.isAdmin) {
-					endpoint.getAllSubmissions();
+					//endpoint.getAllSubmissions();
 					response.sendRedirect("/admin.jsp");
 				} else {
-					endpoint.getSubmissions(emailAddress);
+					//endpoint.getSubmissions(emailAddress);
 					response.sendRedirect("/user.jsp");
 				}
 			}

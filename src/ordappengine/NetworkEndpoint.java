@@ -102,13 +102,13 @@ public class NetworkEndpoint {
 		}
 	}
 	@ApiMethod(name = "getSubmissions")
-	public void getSubmissions(@Named("emailAddress") String emailAddress){
-		session.setSubmissions(storageManager.getBlobServe(emailAddress));
+	public ArrayList<Submission> getSubmissions(@Named("emailAddress") String emailAddress){
+		return storageManager.getBlobServe(emailAddress);
 	}
 	
 	@ApiMethod(name = "getAllSubmissions")
 	public ArrayList<Submission> getAllSubmissions() {
-		return storageManager.getBlobServe(null);
+		return storageManager.getBlobServe();
 	}
 	
 	@ApiMethod(name = "setStorageManager")
@@ -119,5 +119,10 @@ public class NetworkEndpoint {
 	@ApiMethod(name = "updateStatus")
 	public void updateStatus(BlobKey blobkey, @Named("status") String status){
         storageManager.updateStatus(blobkey, status);
+	}
+	
+	@ApiMethod(name = "insertPoster")
+	public void insertPoster(Submission sub){
+        storageManager.insertPoster(sub);
 	}
 }

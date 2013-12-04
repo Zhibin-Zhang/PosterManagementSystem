@@ -63,21 +63,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "networkendpoint.authenticateSession" : {
-      "path" : "authenticateSession",
-      "httpMethod" : "POST",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "ordappengine.NetworkEndpoint.authenticateSession",
-      "request" : {
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "networkendpoint.updateStatus" : {
       "path" : "void/{status}",
       "httpMethod" : "PUT",
@@ -98,6 +83,21 @@
       },
       "response" : {
         "body" : "empty"
+      }
+    },
+    "networkendpoint.authenticateSession" : {
+      "path" : "authenticateSession",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.authenticateSession",
+      "request" : {
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
       }
     },
     "networkendpoint.logout" : {
@@ -214,7 +214,7 @@
         "type" : "object",
         "properties" : {
           "blobKey" : {
-            "$ref" : "BlobKey"
+            "type" : "string"
           },
           "username" : {
             "type" : "string"
@@ -223,15 +223,6 @@
             "type" : "string"
           },
           "posterStatus" : {
-            "type" : "string"
-          }
-        }
-      },
-      "BlobKey" : {
-        "id" : "BlobKey",
-        "type" : "object",
-        "properties" : {
-          "keyString" : {
             "type" : "string"
           }
         }
@@ -245,6 +236,15 @@
             "items" : {
               "$ref" : "Submission"
             }
+          }
+        }
+      },
+      "BlobKey" : {
+        "id" : "BlobKey",
+        "type" : "object",
+        "properties" : {
+          "keyString" : {
+            "type" : "string"
           }
         }
       },
@@ -302,14 +302,14 @@
           "$ref" : "SubmissionCollection"
         }
       },
-      "ordappengine.NetworkEndpoint.authenticateSession" : {
-        "response" : {
-          "$ref" : "BackendSession"
-        }
-      },
       "ordappengine.NetworkEndpoint.updateStatus" : {
         "request" : {
           "$ref" : "BlobKey"
+        }
+      },
+      "ordappengine.NetworkEndpoint.authenticateSession" : {
+        "response" : {
+          "$ref" : "BackendSession"
         }
       },
       "ordappengine.NetworkEndpoint.logout" : {

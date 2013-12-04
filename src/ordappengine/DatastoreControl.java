@@ -246,7 +246,7 @@ public class DatastoreControl implements StorageManager {
 			sub.username = email;
 			sub.posterName = posterName;
 			sub.posterStatus = status;
-			sub.blobKey = blobKey;
+			sub.blobKey = blobKey.getKeyString();
 			serves.add(sub);
 		}
 		
@@ -268,7 +268,7 @@ public class DatastoreControl implements StorageManager {
 			sub.username = email;
 			sub.posterName = posterName;
 			sub.posterStatus = status;
-			sub.blobKey = blobKey;
+			sub.blobKey = blobKey.getKeyString();
 			serves.add(sub);
 		}
 	return serves;

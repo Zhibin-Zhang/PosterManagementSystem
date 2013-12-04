@@ -18,7 +18,7 @@ public class Submission {
 	public static final String OTHER_ERRORS = "other errors";
 	
 	@Id
-	public BlobKey blobKey;
+	public String blobKey;
 	@Basic
 	public String username;
 	@Basic
@@ -44,10 +44,10 @@ public class Submission {
 	public void setPosterStatus(String posterStatus) {
 		this.posterStatus = posterStatus;
 	}
-	public BlobKey getBlobKey() {
+	public String getBlobKey() {
 		return blobKey;
 	}
-	public void setBlobKey(BlobKey blobKey) {
+	public void setBlobKey(String blobKey) {
 		this.blobKey = blobKey;
 	}
 	

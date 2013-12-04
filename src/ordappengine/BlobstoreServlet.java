@@ -35,7 +35,7 @@ public class BlobstoreServlet extends HttpServlet{
 			if(currentSession != null){
 				String emailAddress = currentSession.emailAddress;
 				Submission submission = new Submission();
-				submission.blobKey = blobKey;
+				submission.blobKey = blobKey.getKeyString();
 				submission.posterName =  posterName;
 				submission.username = emailAddress;
 				storageManager.insertPoster(submission);
@@ -50,7 +50,7 @@ public class BlobstoreServlet extends HttpServlet{
 			if(email != null){
 				StorageManager storageManager = new DatastoreControl();
 				Submission submission = new Submission();
-				submission.blobKey = blobKey;
+				submission.blobKey = blobKey.getKeyString();
 				submission.posterName =  posterName;
 				submission.username = email;
 				storageManager.insertPoster(submission);

@@ -9,6 +9,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.appengine.api.blobstore.BlobKey;
 
 @Api(name = "networkendpoint", namespace = @ApiNamespace(ownerDomain = "ordappengine", ownerName = "ordappengine", packagePath = "ordappengine"))
 public class NetworkEndpoint {
@@ -78,10 +79,7 @@ public class NetworkEndpoint {
 		return new RegisterResult(RegisterResult.REGISTER_ERROR_OTHER);
 	}
 
-	@ApiMethod(name = "getAllSubmissions")
-	public ArrayList<Submission> getAllSubmissions() {
-		return storageManager.getBlobServe(null);
-	}
+	
 
 	@ApiMethod(name = "setBackendSessionToken")
 	public void setBackendSessionToken(@Named("token") String token) {
@@ -107,13 +105,19 @@ public class NetworkEndpoint {
 	public void getSubmissions(@Named("emailAddress") String emailAddress){
 		session.setSubmissions(storageManager.getBlobServe(emailAddress));
 	}
-	@ApiMethod(name = "getAdminSubmissions")
-	public void getAdminSubmissions(){
-		session.setSubmissions(storageManager.getBlobServe());
+	
+	@ApiMethod(name = "getAllSubmissions")
+	public ArrayList<Submission> getAllSubmissions() {
+		return storageManager.getBlobServe(null);
 	}
-
+	
 	@ApiMethod(name = "setStorageManager")
 	public void setStorageManager(StorageManager storageManager) {
 		this.storageManager = storageManager;
+	}
+
+	@ApiMethod(name = "updateStatus")
+	public void updateStatus(BlobKey blobkey, @Named("status") String status){
+        storageManager.updateStatus(blobkey, status);
 	}
 }

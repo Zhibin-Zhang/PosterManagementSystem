@@ -26,6 +26,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.impl.client.HttpClientBuilder;
 
+import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 
@@ -37,6 +38,7 @@ public class NetworkServlet extends HttpServlet {
 	public static final int DELETESUBMISSION = 3;
 	public static final int GETSUBMISSIONS = 4;
 	public static final int LOGOUT = 5;
+	public static final int UPDATE = 6;
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -125,7 +127,7 @@ public class NetworkServlet extends HttpServlet {
 				 * - Matt
 				 */
 				if (backendSession.isAdmin) {
-					endpoint.getAdminSubmissions();
+					endpoint.getAllSubmissions();
 					response.sendRedirect("/admin.jsp");
 				} else {
 					endpoint.getSubmissions(emailAddress);
@@ -321,6 +323,12 @@ public class NetworkServlet extends HttpServlet {
 
 			response.sendRedirect("/index.jsp");
 			break;
+		case UPDATE:
+			session = request.getSession(false);			
+			if(session!=null){
+				endpoint.updateStatus((BlobKey)session.getAttribute("blobkey"),(String) session.getAttribute("status"));
+			}
+			response.sendRedirect("/admin.jsp");
 		}
 	}
 

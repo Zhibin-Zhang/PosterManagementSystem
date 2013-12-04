@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"doS0mIKix6_L3_LoT-sZZjofha4/5VxQrxZINpzoBjNExVFwK8-SXYY\"",
+ "etag": "\"doS0mIKix6_L3_LoT-sZZjofha4/HeMgGEaG4JebL5J-6sBPIrP9j0c\"",
  "discoveryVersion": "v1",
  "id": "networkendpoint:v1",
  "name": "networkendpoint",
@@ -168,13 +168,6 @@
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
-  "networkendpoint.getAdminSubmissions": {
-   "id": "networkendpoint.getAdminSubmissions",
-   "allowGet": true,
-   "scopes": [
-    "https://www.googleapis.com/auth/userinfo.email"
-   ]
-  },
   "networkendpoint.getAllSubmissions": {
    "id": "networkendpoint.getAllSubmissions",
    "allowGet": true,
@@ -283,6 +276,25 @@
    "returns": {
     "$ref": "BackendSession"
    },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "networkendpoint.updateStatus": {
+   "id": "networkendpoint.updateStatus",
+   "parameters": {
+    "resource": {
+     "$ref": "BlobKey"
+    },
+    "status": {
+     "type": "string",
+     "required": true
+    }
+   },
+   "parameterOrder": [
+    "resource",
+    "status"
+   ],
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]

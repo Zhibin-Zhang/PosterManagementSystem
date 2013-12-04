@@ -78,6 +78,28 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "networkendpoint.updateStatus" : {
+      "path" : "void/{status}",
+      "httpMethod" : "PUT",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.updateStatus",
+      "request" : {
+        "parameters" : {
+          "status" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
     "networkendpoint.logout" : {
       "path" : "logout",
       "httpMethod" : "POST",
@@ -86,21 +108,6 @@
       "audiences" : [ ],
       "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "ordappengine.NetworkEndpoint.logout",
-      "request" : {
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "empty"
-      }
-    },
-    "networkendpoint.getAdminSubmissions" : {
-      "path" : "void",
-      "httpMethod" : "GET",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "ordappengine.NetworkEndpoint.getAdminSubmissions",
       "request" : {
         "body" : "empty"
       },
@@ -300,9 +307,12 @@
           "$ref" : "BackendSession"
         }
       },
-      "ordappengine.NetworkEndpoint.logout" : {
+      "ordappengine.NetworkEndpoint.updateStatus" : {
+        "request" : {
+          "$ref" : "BlobKey"
+        }
       },
-      "ordappengine.NetworkEndpoint.getAdminSubmissions" : {
+      "ordappengine.NetworkEndpoint.logout" : {
       },
       "ordappengine.NetworkEndpoint.setStorageManager" : {
         "request" : {

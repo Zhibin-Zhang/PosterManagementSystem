@@ -195,6 +195,7 @@ public class NetworkEndpoint {
 	public void updateStatus(@Named("blobKey") String blobkey, @Named("status") String status) {
 		storageManager.updateStatus(blobkey, status);
 	}
+	
 
 	@ApiMethod(name = "insertPoster")
 	public void insertPoster(Submission sub) {

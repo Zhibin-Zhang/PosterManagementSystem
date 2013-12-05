@@ -11,11 +11,12 @@ response.setHeader("Expires", "Sat, 26 Jul 1997 05:00:00 GMT");
 // Check if session exists and is valid
 HttpSession session = request.getSession(false);
 NetworkEndpoint endpoint = new NetworkEndpoint();
+BackendSession backendSession;
 
 if (session != null) {
 	if (session.getAttribute("token") != null) {
 		endpoint.setBackendSessionToken((String)session.getAttribute("token"));
-		BackendSession backendSession = endpoint.authenticateSession();
+		backendSession = endpoint.authenticateSession();
 		
 		if (backendSession != null) {
 			if (backendSession.isAdmin) {
@@ -42,8 +43,9 @@ if (session != null) {
 <div id="content-wrapper">
 	<div id="content-window">
 		<div id="side-pane">
-			<form>		
+			<form method="post" action="NetworkServlet">		
 				<input type="search" placeholder="Search by user" results="5" name="q" autosave="ord">
+				<input type="hidden" name="actionIndex" value="<%=NetworkServlet.SEARCH%>"/>
 			</form>
 			<div class="welcome-message">Sort by date</div>
 				<ul>
@@ -61,13 +63,17 @@ if (session != null) {
 				</ul>
 		</div>
 		<%
-
  //Here is where the list of submissions should be output
+ 
  ArrayList<Submission> submissions = endpoint.getAllSubmissions();
+ String user = request.getParameter("q");
+ if(user!=null){
+ 	submissions=endpoint.getSubmissions(user);
+ }
  
 %>
 		<div id="content-pane">
-			<p align="right"><b>Welcome <%= backendSession.emailAddress %> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
+			<p align="right"><b>Welcome <%= backendSession.emailAddress %> back end size (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
 
 <ul>
 	<%for(int i =0; i< submissions.size(); i++){%>

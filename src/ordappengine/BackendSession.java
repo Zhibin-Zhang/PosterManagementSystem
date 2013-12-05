@@ -12,6 +12,7 @@ public class BackendSession implements Serializable {
 
 	public BackendSession() {
 		this.token = null;
+		submissions=new ArrayList<Submission>();
 	}
 
 	public BackendSession(String token) {

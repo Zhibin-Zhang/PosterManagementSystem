@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -47,7 +48,8 @@ public class NetworkServlet extends HttpServlet {
 	public static final int GETSUBMISSIONS = 4;
 	public static final int LOGOUT = 5;
 	public static final int UPDATE = 6;
-
+	public static final int SEARCH = 7;
+	private static final Logger log = Logger.getLogger(NetworkServlet.class.getName());
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -137,10 +139,12 @@ public class NetworkServlet extends HttpServlet {
 				 * webpage - Matt
 				 */
 				if (backendSession.isAdmin) {
-					// endpoint.getAllSubmissions();
+					backendSession.setSubmissions(endpoint.getAllSubmissions());
+					System.out.println("Session size is: "+backendSession.submissions.size());
+					log.info("Session size is: "+backendSession.submissions.size());
 					response.sendRedirect("/admin.jsp");
 				} else {
-					// endpoint.getSubmissions(emailAddress);
+					//endpoint.getSubmissions(emailAddress);
 					response.sendRedirect("/user.jsp");
 				}
 			}
@@ -348,11 +352,23 @@ public class NetworkServlet extends HttpServlet {
 			session = request.getSession(false);
 			if (session != null) {
 				String status = request.getParameter("status");
-				String stringKey = request.getParameter("blobKey");
-				
+				String stringKey = request.getParameter("blobKey");				
 				endpoint.updateStatus(stringKey,status);
+				response.sendRedirect("/admin.jsp");
+			}			
+			break;
+		case SEARCH:
+			session = request.getSession(false);
+			if(session!=null){
+				String user = request.getParameter("q");
+				System.out.println("User: "+user);
+				if(user.equals("")||user ==null){
+					response.sendRedirect("/admin.jsp");
+				}
+				response.sendRedirect("/admin.jsp?q="+user);
 			}
-			response.sendRedirect("/admin.jsp");
+			break;
+			
 		}
 	}
 }

@@ -100,7 +100,7 @@ public class NetworkEndpoint {
 
 	@SuppressWarnings("deprecation")
 	@ApiMethod(name = "uploadPoster")
-	public UploadResult uploadPoster(@Named("file") PosterFile file) {
+	public UploadResult uploadPoster(PosterFile file) {
 		// Check if there is a file to upload
 		if (file == null || file.fileAsBytes.length == 0) {
 			return new UploadResult(UploadResult.UPLOAD_NO_FILE);
@@ -192,7 +192,7 @@ public class NetworkEndpoint {
 	}
 
 	@ApiMethod(name = "updateStatus")
-	public void updateStatus(BlobKey blobkey, @Named("status") String status) {
+	public void updateStatus(@Named("blobKey") String blobkey, @Named("status") String status) {
 		storageManager.updateStatus(blobkey, status);
 	}
 

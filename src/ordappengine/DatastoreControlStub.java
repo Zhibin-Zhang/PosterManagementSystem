@@ -61,7 +61,7 @@ public class DatastoreControlStub implements StorageManager {
 
 
 	@Override
-	public boolean updateStatus(BlobKey blobKey, String status) {
+	public boolean updateStatus(String blobKey, String status) {
 		// TODO Auto-generated method stub
 		return false;
 	}

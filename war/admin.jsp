@@ -78,19 +78,20 @@ if (session != null) {
 						<input class="button" type="submit" value="Delete"/>
 					</form>	
 					<form>
-						<input class="button" type="submit" value="Update status"/>
-					</form>
-					<form>
 						<input class="button" type="submit" value="Download"/>
 					</form>
-					<select>
-						<option>Submitted</option>
-						<option>Processing</option>
-						<option>Printed</option>
-						<option>Finished</option>
-						<option>Wrong Format/Size</option>
-						<option>Custom</option>
-					</select>
+					<form method="post" action="NetworkServlet">							
+						<input type="hidden" name="blobKey" value="<%=submissions.get(i).getBlobKey()%>"/>
+						<input type="hidden" name="actionIndex" value="<%=NetworkServlet.UPDATE%>"/>
+						<select onchange="this.form.submit()" name = "status">
+							<option value="<%=Submission.SUBMITTED%>"><%=Submission.SUBMITTED%></option>
+							<option value="<%=Submission.PROCESSING%>"><%=Submission.PROCESSING%></option>
+							<option value="<%=Submission.PRINTED%>"><%=Submission.PRINTED%></option>
+							<option value="<%=Submission.FINISHED%>"><%=Submission.FINISHED%></option>
+							<option value="<%=Submission.WRONG_FORMAT_SIZE%>"><%=Submission.WRONG_FORMAT_SIZE%></option>
+							<option value="<%=Submission.OTHER_ERRORS%>"><%=Submission.OTHER_ERRORS%></option>
+						</select>
+					</form>
 					</li>
 			 <%}%>			
 			</ul>

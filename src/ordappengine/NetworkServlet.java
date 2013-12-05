@@ -347,9 +347,10 @@ public class NetworkServlet extends HttpServlet {
 		case UPDATE:
 			session = request.getSession(false);
 			if (session != null) {
-				endpoint.updateStatus(
-						(BlobKey) session.getAttribute("blobkey"),
-						(String) session.getAttribute("status"));
+				String status = request.getParameter("status");
+				String stringKey = request.getParameter("blobKey");
+				
+				endpoint.updateStatus(stringKey,status);
 			}
 			response.sendRedirect("/admin.jsp");
 		}

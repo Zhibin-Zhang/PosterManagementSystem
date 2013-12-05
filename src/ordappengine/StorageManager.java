@@ -23,7 +23,7 @@ public interface StorageManager {
 	
 	ArrayList<Submission> getBlobServe();
 	
-	boolean updateStatus(BlobKey blobKey, String status);
+	boolean updateStatus(String blobKey, String status);
 	
 	boolean deleteSumission(BlobKey blobKey);
 	

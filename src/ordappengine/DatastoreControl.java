@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.jdo.annotations.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 
@@ -20,6 +21,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.memcache.ErrorHandlers;
@@ -241,13 +243,13 @@ public class DatastoreControl implements StorageManager {
 			String email = (String) entity.getProperty("username");
 			String posterName = (String) entity.getProperty("posterName");
 			String status = (String) entity.getProperty("posterStatus");
-			String blobKey = (String) entity.getProperty("blobKey");
-			System.out.println(blobKey);
+			Key blobKey=entity.getKey();
+			String stringKey = blobKey.getName();
 			Submission sub = new Submission();
 			sub.username = email;
 			sub.posterName = posterName;
 			sub.posterStatus = status;
-			sub.blobKey = blobKey;
+			sub.blobKey = stringKey;
 			serves.add(sub);
 		}
 		
@@ -264,19 +266,20 @@ public class DatastoreControl implements StorageManager {
 			String email = (String) entity.getProperty("username");
 			String posterName = (String) entity.getProperty("posterName");
 			String status = (String) entity.getProperty("posterStatus");
-			String blobKey = (String) entity.getKey().toString();
+			Key blobKey=entity.getKey();
+			String stringKey = blobKey.getName();
 			Submission sub = new Submission();
 			sub.username = email;
 			sub.posterName = posterName;
 			sub.posterStatus = status;
-			sub.blobKey = blobKey;
+			sub.blobKey = stringKey;
 			serves.add(sub);
 		}
 	return serves;
 	}
 
 	@Override
-	public boolean updateStatus(BlobKey blobKey, String status) {
+	public boolean updateStatus(String blobKey, String status) {
 		EntityManager em = EMF.get().createEntityManager();
 		Submission submission = null;
 		try {

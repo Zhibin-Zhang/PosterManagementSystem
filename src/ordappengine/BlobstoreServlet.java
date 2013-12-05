@@ -1,6 +1,7 @@
 package ordappengine;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,11 @@ public class BlobstoreServlet extends HttpServlet{
 		else
 		{
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-		}		
+		}	
+		
+		PrintWriter writer = resp.getWriter();
+		writer.print(blobKey.toString());
+		writer.flush();
+		writer.close();
 	}
 }

@@ -96,7 +96,7 @@ public class DatastoreControl implements StorageManager {
 		try {
 			Mailer.send(user.emailAddress, "Oklahoma Research Day Poster Management System Registration Information", 
 					"Thanks for registering Oklahoma Research Day Poster Management System. Please use your email address " +
-					"to login to the system./n/nCloud 5olutions Team");
+					"to login to the system.\n\nCloud 5olutions Team");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

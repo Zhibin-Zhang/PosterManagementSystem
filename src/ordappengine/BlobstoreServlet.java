@@ -62,12 +62,13 @@ public class BlobstoreServlet extends HttpServlet{
 		}
 		else
 		{
-			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			resp.setStatus(HttpServletResponse.SC_OK);
+			resp.setContentType("text/plain");
+			PrintWriter writer = resp.getWriter();
+			writer.print(blobKey.toString());
+			writer.flush();
+			writer.close();
 		}	
 		
-		PrintWriter writer = resp.getWriter();
-		writer.print(blobKey.toString());
-		writer.flush();
-		writer.close();
 	}
 }

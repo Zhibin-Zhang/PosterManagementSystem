@@ -1,10 +1,12 @@
 <%@ page session="false" %><%@ 
 page import="ordappengine.*,java.util.ArrayList" %><%
 
-// Anti-cache headers. see http://www.xyzws.com/JSPfaq/how-to-disable-browser-caching-for-a-specific-jsp/11
+// Anti-cache headers. See:
+// http://www.xyzws.com/JSPfaq/how-to-disable-browser-caching-for-a-specific-jsp/11
+// http://stackoverflow.com/questions/49547/making-sure-a-web-page-is-not-cached-across-all-browsers
 response.setHeader("Pragma", "no-cache");
-response.setHeader("Cache-Control", "no-cache");
-response.setDateHeader("Expires", 0);
+response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+response.setHeader("Expires", "Sat, 26 Jul 1997 05:00:00 GMT");
 
 // Check if session exists and is valid
 HttpSession session = request.getSession(false);

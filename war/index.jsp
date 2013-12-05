@@ -76,6 +76,12 @@ response.setHeader("Expires", "Sat, 26 Jul 1997 05:00:00 GMT");
 				</div>
 				<div class="item">
 					<img src="images/ord2.jpg"/>
+				</div> 
+				<div class="item">
+					<img src="images/ord3.jpg"/>
+				</div> 
+				<div class="item">
+					<img src="images/ord4.jpg"/>
 				</div>                  
 			</div>
 			<!-- Carousel nav -->

@@ -1,10 +1,12 @@
 <%@ page session="false" %><%@
 page import="ordappengine.*" %><%
 
-// Anti-cache headers. see http://www.xyzws.com/JSPfaq/how-to-disable-browser-caching-for-a-specific-jsp/11
+// Anti-cache headers. See:
+// http://www.xyzws.com/JSPfaq/how-to-disable-browser-caching-for-a-specific-jsp/11
+// http://stackoverflow.com/questions/49547/making-sure-a-web-page-is-not-cached-across-all-browsers
 response.setHeader("Pragma", "no-cache");
-response.setHeader("Cache-Control", "no-cache");
-response.setDateHeader("Expires", 0);
+response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+response.setHeader("Expires", "Sat, 26 Jul 1997 05:00:00 GMT");
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -102,13 +104,16 @@ response.setDateHeader("Expires", 0);
 <div id="overlay"></div>
 <div class="dialog" id="register-dialog">
 	<form id="register-form" method="post" action="NetworkServlet?actionIndex=<% out.print(NetworkServlet.UPLOADPOSTER); %>" enctype="multipart/form-data">
-			<input name="registerFirst" type="hidden" value="1"/>
 			<img src="images/exit.png" onClick="closeRegistration()"/>
-			Email Address<input type="email" placeholder="Email address" name="email"/>
-			Password<input type="password" placeholder="Password" name="password"/>
-			Confirm Password<input type="password" placeholder="Confirm password" name="confirm"/>
-			Poster File<input type="file" name="uploadPoster" id="file"/>
-			<input class="button" type="submit" value="Register"/>		
+			<p>Email Address</p>
+			<p><input type="email" placeholder="Email address" name="email"/></p>
+			<p>Password</p>
+			<p><input type="password" placeholder="Password" name="password"/></p>
+			<p>Confirm Password</p>
+			<p><input type="password" placeholder="Confirm password" name="confirm"/></p>
+			<p>Poster File</p>
+			<p><input type="file" name="uploadPoster" id="file"/></p>
+			<p><input class="button" type="submit" value="Register"/>		</p>
 	</form>
 </div>
 <div id="notification-dialog">

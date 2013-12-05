@@ -1,10 +1,12 @@
 <%@ page session="false" %><%@ 
 page import="ordappengine.*,java.util.ArrayList" %><%
 
-// Anti-cache headers. see http://www.xyzws.com/JSPfaq/how-to-disable-browser-caching-for-a-specific-jsp/11
+// Anti-cache headers. See:
+// http://www.xyzws.com/JSPfaq/how-to-disable-browser-caching-for-a-specific-jsp/11
+// http://stackoverflow.com/questions/49547/making-sure-a-web-page-is-not-cached-across-all-browsers
 response.setHeader("Pragma", "no-cache");
-response.setHeader("Cache-Control", "no-cache");
-response.setDateHeader("Expires", 0);
+response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+response.setHeader("Expires", "Sat, 26 Jul 1997 05:00:00 GMT");
 
 // Check if session exists and is valid
 HttpSession session = request.getSession(false);
@@ -48,7 +50,7 @@ if (session != null) {
 </script>
 </head>
 
-<body>
+<body<% if (request.getParameter("msg") != null) { out.print(" onload=\"showNotification()\""); } %>>
 
 <div id="menu-wrapper">
 	<div id="menu-center">
@@ -67,8 +69,12 @@ if (session != null) {
   ArrayList<Submission> submissions = endpoint.getSubmissions(backendSession.emailAddress);
 %>
 		<div id="content-pane">
-			<p align="right"><b>Welcome <%= backendSession.emailAddress %> You have <%= submissions.size()%>(<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
-			<p align="right"><input type="button" class="button" value="Upload Poster" onclick="showRegistration()"></p>
+			<p align="right"><b>Welcome <%= backendSession.emailAddress %> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
+			<div id="upload-area">
+				<p>Click on the button below to upload a poster. You may upload .pdf, .ppt, .pptx, .jpg, or .png files that are 7 MB or smaller.</p>
+				<p><input type="button" class="button" value="Upload Poster" onclick="showRegistration()"></p>
+			</div>
+			<p align="right">You have <%= submissions.size()%> poster(s) (<b><a href="user.jsp">Refresh</a></b>)</p>
 			<ul>
 			
 	<%if(submissions.size()>0){
@@ -90,6 +96,7 @@ if (session != null) {
 	  </li>
 	  <%}%>
 			</ul>
+			<div style="clear: both">&nbsp;</div>
 		</div>
 	</div>
 </div>
@@ -113,9 +120,29 @@ if (session != null) {
 <div class="dialog" id="register-dialog">
 	<form id="register-form" method="post" action="NetworkServlet?actionIndex=<% out.print(NetworkServlet.UPLOADPOSTER); %>" enctype="multipart/form-data">
 			<img src="images/exit.png" onClick="closeRegistration()"/>
-			Poster File<input type="file" name="uploadPoster" id="file"/>
-			<input class="button" type="submit" value="Upload Poster"/>		
+			<p>Select your poster file</p>
+			<p><input type="file" name="uploadPoster" id="file"/></p>
+			<p><input class="button" type="submit" value="Upload Poster"/></p>		
 	</form>
+</div>
+<div id="notification-dialog">
+	<div id="notification-area"><p><%
+	
+if (request.getParameter("msg") != null) {
+	if (request.getParameter("msg").equals("upload_success")) {
+		out.print("Your poster was uploaded! If you cannot see your poster in the list, please wait a few seconds and click on <u>Refresh</u>.");
+	} else if (request.getParameter("msg").equals("upload_invalid_type")) {
+		out.print("Your poster was not uploaded. Please try again. Make sure it is one of the following types: .pdf, .ppt, .pptx, .jpg, or .png.");
+	} else if (request.getParameter("msg").equals("upload_max_size")) {
+		out.print("Your poster was not uploaded. Please try again. Make sure it is no larger than 7 MB.");
+	} else if (request.getParameter("msg").equals("upload_backend_error")) {
+		out.print("Your poster was not uploaded. Please try again. An unspecified error has occurred.");
+	} else if (request.getParameter("msg").equals("upload_no_file")) {
+		out.print("You did not select a file to upload!");
+	}
+}
+			
+%></p><p><input class="button" type="button" value="Ok" onclick="closeNotification()" /></p></div>
 </div>
 </body>
 

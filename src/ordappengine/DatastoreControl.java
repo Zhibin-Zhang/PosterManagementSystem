@@ -242,6 +242,7 @@ public class DatastoreControl implements StorageManager {
 			String posterName = (String) entity.getProperty("posterName");
 			String status = (String) entity.getProperty("posterStatus");
 			String blobKey = (String) entity.getProperty("blobKey");
+			System.out.println(blobKey);
 			Submission sub = new Submission();
 			sub.username = email;
 			sub.posterName = posterName;

@@ -112,7 +112,7 @@ ul{
 	background: white;
 	display: inline-block;
 	width: 650px;
-	height: 428px;
+	min-height: 428px;
 }
 #content-pane ul {
 	margin: 0;
@@ -345,23 +345,23 @@ input[type=text], input[type=password], input[type=datetime], input[type=datetim
 #register-form{
 	position: relative;
 }
+#register-form p {
+	margin: 15px;
+	padding: 0;
+}
 #register-form img{
 	position: absolute;
 	right: -33px;
-	top: -33px;
+	top: -45px;
 	height: 30px;
 	width: 30px;
 	cursor: pointer;
 }
 #register-form input{
-	display: block;
-	margin: 0 0 20px 0;
 	width: 200px;
 }
 #register-form input[type=submit]{
 	width: 214px;
-	display: block;
-	margin: 0;
 }
 .list-filename{
 	display: inline-block;
@@ -395,4 +395,13 @@ input[type=text], input[type=password], input[type=datetime], input[type=datetim
 
 #notification-area input[type=button]{
 	width: 150px;
+}
+
+#upload-area {
+	background-color: #ECECEC;
+	margin: 10px;
+}
+
+#upload-area p {
+	padding: 10px;
 }

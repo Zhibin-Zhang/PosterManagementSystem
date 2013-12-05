@@ -20,7 +20,30 @@ if (session != null) {
 		
 		if (backendSession != null) {
 			if (backendSession.isAdmin) {
+			
+
+
+				ArrayList<Submission> submissions = endpoint.getAllSubmissions();
+		 		String user = request.getParameter("q");
+		 		
+		 		if(user != null) {
+		 			submissions=endpoint.getSubmissions(user);
+		 		}
+		 		
+		 		String filter = request.getParameter("filter");
+		 		
+		 		if(filter != null) {
+		 			submissions=endpoint.filterSubmissions(filter);
+		 		}
+		 		
+		 		int sidePaneSize = 428;
+		 		
+		 		if(submissions.size() > 4){
+		 			sidePaneSize += 76 * (submissions.size() - 4);
+		 		}
 		
+
+
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -42,7 +65,7 @@ if (session != null) {
 </div>
 <div id="content-wrapper">
 	<div id="content-window">
-		<div id="side-pane">
+		<div id="side-pane" style="height:<%=sidePaneSize%>">
 			<form method="post" action="NetworkServlet">		
 				<input type="search" placeholder="Search by user" results="5" name="q" autosave="ord">
 				<input type="hidden" name="actionIndex" value="<%=NetworkServlet.SEARCH%>"/>
@@ -103,20 +126,6 @@ if (session != null) {
 					</li>
 				</ul>
 		</div>
-		<%
- //Here is where the list of submissions should be output
- 
- ArrayList<Submission> submissions = endpoint.getAllSubmissions();
- String user = request.getParameter("q");
- if(user!=null){
- 	submissions=endpoint.getSubmissions(user);
- }
- String filter = request.getParameter("filter");
- if(filter!=null){
- 	submissions=endpoint.filterSubmissions(filter);
- 	}
- 
-%>
 		<div id="content-pane">
 			<p align="right"><b>Welcome <%= backendSession.emailAddress %> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
 
@@ -128,10 +137,10 @@ if (session != null) {
 		<li>
 			<div class="list-username"><% out.print(submissions.get(i).username);%></div>
 			<div class="list-filename"><%=submissions.get(i).posterName%></div>
-					<form>
+					<form class="formright">
 						<input class="button" type="submit" value="Delete"/>
 					</form>	
-					<form>
+					<form class="formright">
 						<input class="button" type="submit" value="Download"/>
 					</form>
 					<form method="post" action="NetworkServlet">							

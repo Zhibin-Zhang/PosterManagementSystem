@@ -54,12 +54,53 @@ if (session != null) {
 				</ul>
 			<div class="welcome-message">Sort by status</div>
 				<ul>
-					<li>Submitted</li>
-					<li>Processing</li>
-					<li>Printed</li>
-					<li>Finished</li>
-					<li>Wrong Format/Size</li>
-					<li>Custom</li>
+					<li onclick="submittedForm.submit()">
+						<form name="submittedForm" method = "post" action ="NetworkServlet">
+							<input type="hidden" name="actionIndex" value="<%=NetworkServlet.FILTER%>"/>
+							<input type="hidden" name="filter" value ="<%=Submission.SUBMITTED%>"/>		
+				 		</form>
+				 		<%=Submission.SUBMITTED%>
+					</li>
+					<li onclick="processingForm.submit()">
+						<form name="processingForm" method = "post" action ="NetworkServlet">
+							<input type="hidden" name="actionIndex" value="<%=NetworkServlet.FILTER%>"/>
+							<input type="hidden" name="filter" value ="<%=Submission.PROCESSING%>"/>		
+				 		</form>
+				 		<%=Submission.PROCESSING%>
+					</li>
+					<li onclick="printedForm.submit()">
+						<form name="printedForm" method = "post" action ="NetworkServlet">
+							<input type="hidden" name="actionIndex" value="<%=NetworkServlet.FILTER%>"/>
+							<input type="hidden" name="filter" value ="<%=Submission.PRINTED%>"/>		
+				 		</form>
+				 		<%=Submission.PRINTED%>
+					</li>
+					<li onclick="finishedForm.submit()">
+						<form name="finishedForm" method = "post" action ="NetworkServlet">
+							<input type="hidden" name="actionIndex" value="<%=NetworkServlet.FILTER%>"/>
+							<input type="hidden" name="filter" value ="<%=Submission.FINISHED%>"/>		
+				 		</form>
+				 		<%=Submission.FINISHED%>
+					</li>
+					<li onclick="wrongFormatForm.submit()">
+						<form name="wrongFormatForm" method = "post" action ="NetworkServlet">
+							<input type="hidden" name="actionIndex" value="<%=NetworkServlet.FILTER%>"/>
+							<input type="hidden" name="filter" value ="<%=Submission.WRONG_FORMAT_SIZE%>"/>		
+				 		</form>
+				 		<%=Submission.WRONG_FORMAT_SIZE%>
+					</li>
+					<li onclick="otherErrorsForm.submit()">
+						<form name="otherErrorsForm" method = "post" action ="NetworkServlet">
+							<input type="hidden" name="actionIndex" value="<%=NetworkServlet.FILTER%>"/>
+							<input type="hidden" name="filter" value ="<%=Submission.OTHER_ERRORS%>"/>		
+				 		</form>
+				 		<%=Submission.OTHER_ERRORS%>
+					</li>
+					<li onclick="noneForm.submit()">	
+						<form name="noneForm" method = "post" action ="/admin.jsp">			
+				 		</form>	
+				 		None
+					</li>
 				</ul>
 		</div>
 		<%
@@ -70,15 +111,22 @@ if (session != null) {
  if(user!=null){
  	submissions=endpoint.getSubmissions(user);
  }
+ String filter = request.getParameter("filter");
+ if(filter!=null){
+ 	submissions=endpoint.filterSubmissions(filter);
+ 	}
  
 %>
 		<div id="content-pane">
 			<p align="right"><b>Welcome <%= backendSession.emailAddress %> back end size (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
 
 <ul>
+<%if(submissions.size()==0){
+    out.print("Either you have no submissions, or your filter turned up zero results.");
+    }%>
 	<%for(int i =0; i< submissions.size(); i++){%>
 		<li>
-			<div class="list-username"><%=submissions.get(i).username%></div>
+			<div class="list-username"><% out.print(submissions.get(i).username);%></div>
 			<div class="list-filename"><%=submissions.get(i).posterName%></div>
 					<form>
 						<input class="button" type="submit" value="Delete"/>

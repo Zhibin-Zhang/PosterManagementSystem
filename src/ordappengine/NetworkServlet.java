@@ -49,6 +49,7 @@ public class NetworkServlet extends HttpServlet {
 	public static final int LOGOUT = 5;
 	public static final int UPDATE = 6;
 	public static final int SEARCH = 7;
+	public static final int FILTER = 8;
 	private static final Logger log = Logger.getLogger(NetworkServlet.class.getName());
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -129,6 +130,8 @@ public class NetworkServlet extends HttpServlet {
 			} else {
 				// Authentication succeeded. Create session and store
 				// backend session token
+				
+						
 				session = request.getSession(true);
 				session.setAttribute("token", backendSession.token);
 
@@ -139,16 +142,18 @@ public class NetworkServlet extends HttpServlet {
 				 * webpage - Matt
 				 */
 				if (backendSession.isAdmin) {
-					backendSession.setSubmissions(endpoint.getAllSubmissions());
-					System.out.println("Session size is: "+backendSession.submissions.size());
-					log.info("Session size is: "+backendSession.submissions.size());
 					response.sendRedirect("/admin.jsp");
 				} else {
-					//endpoint.getSubmissions(emailAddress);
+					Submission sub = new Submission();
+					sub.posterName="dummyposter.ppt";
+					sub.username=emailAddress;
+					sub.blobKey="dummykey1";
+					sub.blobKey="dummykey2";
+					sub.posterStatus=Submission.FINISHED;
+					endpoint.insertPoster(sub);
 					response.sendRedirect("/user.jsp");
 				}
 			}
-
 			break;
 		case UPLOADPOSTER:
 			boolean registerFirst = true;
@@ -368,6 +373,14 @@ public class NetworkServlet extends HttpServlet {
 				response.sendRedirect("/admin.jsp?q="+user);
 			}
 			break;
+		case FILTER:
+			session = request.getSession(false);
+			if(session!=null){
+				String filter = request.getParameter("filter");
+				if(filter.equals("none"))
+					response.sendRedirect("/admin.jsp");
+				response.sendRedirect("admin.jsp?filter="+filter);
+			}
 			
 		}
 	}

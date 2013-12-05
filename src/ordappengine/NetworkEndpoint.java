@@ -201,4 +201,47 @@ public class NetworkEndpoint {
 	public void insertPoster(Submission sub) {
 		storageManager.insertPoster(sub);
 	}
+	@ApiMethod(name = "filterSubmissions")
+	public ArrayList<Submission> filterSubmissions(@Named("filter") String filter){
+		ArrayList<Submission> temp = this.getAllSubmissions();
+		ArrayList<Submission> returningList = new ArrayList<Submission>();
+		if(filter.equals(Submission.FINISHED)){
+			for(int i = 0; i<temp.size();i++){
+				if(temp.get(i).posterStatus.equals((Submission.FINISHED))){
+					returningList.add(temp.get(i));
+				}
+			}			
+		}else if(filter.equals(Submission.OTHER_ERRORS)){
+			for(int i = 0; i<temp.size();i++){
+				if(temp.get(i).posterStatus.equals((Submission.OTHER_ERRORS))){
+					returningList.add(temp.get(i));
+				}
+			}
+		}else if(filter.equals(Submission.PRINTED)){
+			for(int i = 0; i<temp.size();i++){
+				if(temp.get(i).posterStatus.equals((Submission.PRINTED))){
+					returningList.add(temp.get(i));
+				}
+			}
+		}else if(filter.equals(Submission.PROCESSING)){
+			for(int i = 0; i<temp.size();i++){
+				if(temp.get(i).posterStatus.equals((Submission.PROCESSING))){
+					returningList.add(temp.get(i));
+				}
+			}
+		}else if(filter.equals(Submission.SUBMITTED)){
+			for(int i = 0; i<temp.size();i++){
+				if(temp.get(i).posterStatus.equals((Submission.SUBMITTED))){
+					returningList.add(temp.get(i));
+				}
+			}
+		}else if(filter.equals(Submission.WRONG_FORMAT_SIZE)){
+			for(int i = 0; i<temp.size();i++){
+				if(temp.get(i).posterStatus.equals((Submission.WRONG_FORMAT_SIZE))){
+					returningList.add(temp.get(i));
+				}
+			}
+		}
+		return returningList;
+	}
 }

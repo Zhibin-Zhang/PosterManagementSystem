@@ -144,13 +144,6 @@ public class NetworkServlet extends HttpServlet {
 				if (backendSession.isAdmin) {
 					response.sendRedirect("/admin.jsp");
 				} else {
-					Submission sub = new Submission();
-					sub.posterName="dummyposter.ppt";
-					sub.username=emailAddress;
-					sub.blobKey="dummykey1";
-					sub.blobKey="dummykey2";
-					sub.posterStatus=Submission.FINISHED;
-					endpoint.insertPoster(sub);
 					response.sendRedirect("/user.jsp");
 				}
 			}

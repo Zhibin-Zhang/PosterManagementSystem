@@ -147,12 +147,12 @@ if (session != null) {
 						<input type="hidden" name="blobKey" value="<%=submissions.get(i).getBlobKey()%>"/>
 						<input type="hidden" name="actionIndex" value="<%=NetworkServlet.UPDATE%>"/>
 						<select onchange="this.form.submit()" name = "status">
-							<option value="<%=Submission.SUBMITTED%>"><%=Submission.SUBMITTED%></option>
-							<option value="<%=Submission.PROCESSING%>"><%=Submission.PROCESSING%></option>
-							<option value="<%=Submission.PRINTED%>"><%=Submission.PRINTED%></option>
-							<option value="<%=Submission.FINISHED%>"><%=Submission.FINISHED%></option>
-							<option value="<%=Submission.WRONG_FORMAT_SIZE%>"><%=Submission.WRONG_FORMAT_SIZE%></option>
-							<option value="<%=Submission.OTHER_ERRORS%>"><%=Submission.OTHER_ERRORS%></option>
+							<option value="<%=Submission.SUBMITTED%>"<%= submissions.get(i).posterStatus.equals(Submission.SUBMITTED) ? " selected=\"selected\"" : "" %>><%=Submission.SUBMITTED%></option>
+							<option value="<%=Submission.PROCESSING%>"<%= submissions.get(i).posterStatus.equals(Submission.PROCESSING) ? " selected=\"selected\"" : "" %>><%=Submission.PROCESSING%></option>
+							<option value="<%=Submission.PRINTED%>"<%= submissions.get(i).posterStatus.equals(Submission.PRINTED) ? " selected=\"selected\"" : "" %>><%=Submission.PRINTED%></option>
+							<option value="<%=Submission.FINISHED%>"<%= submissions.get(i).posterStatus.equals(Submission.FINISHED) ? " selected=\"selected\"" : "" %>><%=Submission.FINISHED%></option>
+							<option value="<%=Submission.WRONG_FORMAT_SIZE%>"<%= submissions.get(i).posterStatus.equals(Submission.WRONG_FORMAT_SIZE) ? " selected=\"selected\"" : "" %>><%=Submission.WRONG_FORMAT_SIZE%></option>
+							<option value="<%=Submission.OTHER_ERRORS%>"<%= submissions.get(i).posterStatus.equals(Submission.OTHER_ERRORS) ? " selected=\"selected\"" : "" %>><%=Submission.OTHER_ERRORS%></option>
 						</select>
 					</form>
 					</li>

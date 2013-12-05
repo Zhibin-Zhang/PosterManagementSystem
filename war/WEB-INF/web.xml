@@ -24,6 +24,15 @@
    <param-value>ordappengine.NetworkEndpoint</param-value>
   </init-param>
  </servlet>
+ 
+ <servlet>
+     <servlet-name>ServeBlobServlet</servlet-name>
+     <servlet-class>ordappengine.ServeBlobServlet</servlet-class>
+ </servlet>
+ <servlet-mapping>
+     <servlet-name>ServeBlobServlet</servlet-name>
+     <url-pattern>/download</url-pattern>
+ </servlet-mapping>
  <servlet>
      <servlet-name>UploadUrlServlet</servlet-name>
      <servlet-class>ordappengine.BlobstoreUrlServlet</servlet-class>

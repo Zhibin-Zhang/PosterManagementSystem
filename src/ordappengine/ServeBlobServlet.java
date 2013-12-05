@@ -32,5 +32,17 @@ public class ServeBlobServlet extends HttpServlet{
 		resp.setHeader("content-disposition", "attachment;filename=" + blobInfo.getFilename());
 		blobstoreService.serve(blobKey, resp);
 	}
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		super.doPost(req, resp);
+		BlobKey blobKey = new BlobKey(req.getParameter("blob-key"));
+		BlobInfoFactory blobInfoFactory = new BlobInfoFactory(DatastoreServiceFactory.getDatastoreService());
+		BlobInfo blobInfo = blobInfoFactory.loadBlobInfo(blobKey);
+		resp.setContentLength(new Long(blobInfo.getSize()).intValue());
+		resp.setHeader("content-type", blobInfo.getContentType());
+		resp.setHeader("content-disposition", "attachment;filename=" + blobInfo.getFilename());
+		blobstoreService.serve(blobKey, resp);
+	}
 	
 }

@@ -20,8 +20,10 @@ import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.memcache.ErrorHandlers;
@@ -280,21 +282,17 @@ public class DatastoreControl implements StorageManager {
 
 	@Override
 	public boolean updateStatus(String blobKey, String status) {
-		EntityManager em = EMF.get().createEntityManager();
-		Submission submission = null;
+		DatastoreService datastore =
+                DatastoreServiceFactory.getDatastoreService();
+		Key key = KeyFactory.createKey("Submission", blobKey);
 		try {
-			submission = em.find(Submission.class, blobKey);			
-			if(submission != null){
-				submission.posterStatus = status;
-			}
-			em.persist(submission);
-			
-		} finally {
-			em.close();
-		}
-		
-		if(submission == null)
+			Entity sub = datastore.get(key);
+			sub.setProperty("posterStatus", status);
+			datastore.put(sub);
+		} catch (EntityNotFoundException e) {
+			e.printStackTrace();
 			return false;
+		}
 		return true;
 	}
 

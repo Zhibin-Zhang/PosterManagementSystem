@@ -104,10 +104,10 @@ if (session != null) {
 	<div id="menu-center">
 		<img alt="" src="images/bwbroncho.png" /> 
 		<div class="footer-content underlined">
-			<a class="footer-link" href="#">Uconnect</a>
-			<a class="footer-link" href="#">MSDN-AA [DreamSpark]</a>
-			<a class="footer-link" href="#">D2L</a>
-			<a class="footer-link" href="#">ACM Club</a>
+			<a class="footer-link" href="http://uconnect.uco.edu">Uconnect</a>
+			<a class="footer-link" href="https://www.dreamspark.com/">MSDN-AA [DreamSpark]</a>
+			<a class="footer-link" href="http://learn.uco.edu">D2L</a>
+			<a class="footer-link" href="http://cs2.uco.edu/~acm/">ACM Club</a>
 		</div>
 		<div class="footer-content">
 			&copy; 2013 Department of Computer Science<br>

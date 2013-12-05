@@ -8,8 +8,8 @@
 
   <groupId>com.google.apis</groupId>
   <artifactId>google-api-services-networkendpoint</artifactId>
-  <version>v1-rev20131205093910-1.16.0-rc</version>
-  <name>networkendpoint v1 (revision 20131205093910)</name>
+  <version>v1-rev20131205110909-1.16.0-rc</version>
+  <name>networkendpoint v1 (revision 20131205110909)</name>
   <packaging>jar</packaging>
 
   <inceptionYear>2011</inceptionYear>

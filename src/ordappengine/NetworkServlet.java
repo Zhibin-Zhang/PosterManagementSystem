@@ -247,7 +247,6 @@ public class NetworkServlet extends HttpServlet {
 				switch (endpoint.registerUser(registerEmail, registerPassword,
 						registerConfirmPassword).result) {
 				case RegisterResult.REGISTER_SUCCESS:
-					response.sendRedirect("/index.jsp?msg=register_success");
 					registerSuccessful = true;
 					break;
 				case RegisterResult.REGISTER_ERROR_EMAIL_NOT_VALID:

@@ -82,10 +82,10 @@ if (session != null) {
 		<li>
 			<div class="list-username"><%=submissions.get(i).posterName%></div>
 			<div class="list-filename"><%=submissions.get(i).posterStatus%></div>
-				<form>
+				<form class="formright">
 					<input class="button" type="submit" value="Delete"/>
 				</form>	
-				<form>
+				<form class="formright">
 					<input class="button" type="submit" value="Download"/>
 				</form>
 		</li>

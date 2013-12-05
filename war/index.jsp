@@ -55,7 +55,7 @@ response.setDateHeader("Expires", 0);
 			<input name="emailAddress" type="email" placeholder="Email address"/>
 			<input name="password" type="password" placeholder="Password"/>
 			<input class="button" type="submit" value="Sign in"/>
-			<input type="hidden" name="actionIndex" value="<% out.print(NetworkServlet.SIGNIN); %>"/>
+			<input type="hidden" name="actionIndex" value="0"/>
 		</form>
 	</div>
 </div>
@@ -74,6 +74,12 @@ response.setDateHeader("Expires", 0);
 				</div>
 				<div class="item">
 					<img src="images/ord2.jpg"/>
+				</div> 
+				<div class="item">
+					<img src="images/ord3.jpg"/>
+				</div> 
+				<div class="item">
+					<img src="images/ord4.jpg"/>
 				</div>                  
 			</div>
 			<!-- Carousel nav -->
@@ -101,13 +107,12 @@ response.setDateHeader("Expires", 0);
 </div>
 <div id="overlay"></div>
 <div class="dialog" id="register-dialog">
-	<form id="register-form" method="post" action="NetworkServlet?actionIndex=<% out.print(NetworkServlet.UPLOADPOSTER); %>" enctype="multipart/form-data">
-			<input name="registerFirst" type="hidden" value="1"/>
+	<form id="register-form" method="post" action="NetworkServlet?actionIndex=2" enctype="multipart/form-data">
 			<img src="images/exit.png" onClick="closeRegistration()"/>
 			Email Address<input type="email" placeholder="Email address" name="email"/>
 			Password<input type="password" placeholder="Password" name="password"/>
 			Confirm Password<input type="password" placeholder="Confirm password" name="confirm"/>
-			Poster File<input type="file" name="uploadPoster" id="file"/>
+			Poster File<input type="file" name="file" id="file"/>
 			<input class="button" type="submit" value="Register"/>		
 	</form>
 </div>
@@ -133,10 +138,6 @@ if (request.getParameter("msg") != null) {
 		out.print("The passwords you entered do not match! Please try again.");
 	} else if (request.getParameter("msg").equals("register_other_error")) {
 		out.print("An unspecified error has occurred! Please try again.");
-	} else if (request.getParameter("msg").equals("register_authentication_error")) {
-		out.print("An unspecified authentication error has occurred! Please login and try uploading the file again.");
-	} else if (request.getParameter("msg").equals("register_invalid_file")) {
-		out.print("The file you submitted is not valid. Make sure it is one of the following types: .ppt, .pptx, .jpg, .png. Also, the maximum size is 1 MB.");
 	}
 }
 			

@@ -58,19 +58,20 @@ if (session != null) {
 					<li>Custom</li>
 				</ul>
 		</div>
+		<%
+
+ //Here is where the list of submissions should be output
+ ArrayList<Submission> submissions = endpoint.getAllSubmissions();
+ 
+%>
 		<div id="content-pane">
 			<p align="right"><b>Welcome <%= backendSession.emailAddress %> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
-			<ul>
-<%
 
-// Here is where the list of submissions should be output
-// ArrayList<Submission> submissions = endpoint.getAllSubmissions();
-
-%>
-				<li>
-					<div class="list-username">bob@aol.com</div>
-					<div class="list-filename">submission.ptx</div>
-					
+<ul>
+	<%for(int i =0; i< submissions.size(); i++){%>
+		<li>
+			<div class="list-username"><%=submissions.get(i).username%></div>
+			<div class="list-filename"><%=submissions.get(i).posterName%></div>
 					<form>
 						<input class="button" type="submit" value="Delete"/>
 					</form>	
@@ -88,73 +89,8 @@ if (session != null) {
 						<option>Wrong Format/Size</option>
 						<option>Custom</option>
 					</select>
-				</li>
-				<li>
-					<div class="list-username">jeff@gmail.com</div>
-					<div class="list-filename">submission.ptx</div>
-					
-					<form>
-						<input class="button" type="submit" value="Delete"/>
-					</form>	
-					<form>
-						<input class="button" type="submit" value="Update status"/>
-					</form>
-					<form>
-						<input class="button" type="submit" value="Download"/>
-					</form>
-					<select>
-						<option>Submitted</option>
-						<option>Processing</option>
-						<option>Printed</option>
-						<option>Finished</option>
-						<option>Wrong Format/Size</option>
-						<option>Custom</option>
-					</select>
-				</li>
-				<li>
-					<div class="list-username">john@uco.edu</div>
-					<div class="list-filename">submission.ptx</div>
-					
-					<form>
-						<input class="button" type="submit" value="Delete"/>
-					</form>	
-					<form>
-						<input class="button" type="submit" value="Update status"/>
-					</form>
-					<form>
-						<input class="button" type="submit" value="Download"/>
-					</form>
-					<select>
-						<option>Submitted</option>
-						<option>Processing</option>
-						<option>Printed</option>
-						<option>Finished</option>
-						<option>Wrong Format/Size</option>
-						<option>Custom</option>
-					</select>
-				</li>
-				<li>
-					<div class="list-username">greg@hotmail.com</div>
-					<div class="list-filename">ord.pdf</div>
-					
-					<form>
-						<input class="button" type="submit" value="Delete"/>
-					</form>	
-					<form>
-						<input class="button" type="submit" value="Update status"/>
-					</form>
-					<form>
-						<input class="button" type="submit" value="Download"/>
-					</form>
-					<select>
-						<option>Submitted</option>
-						<option>Processing</option>
-						<option>Printed</option>
-						<option>Finished</option>
-						<option>Wrong Format/Size</option>
-						<option>Custom</option>
-					</select>
-				</li>
+					</li>
+			 <%}%>			
 			</ul>
 		</div>
 	</div>

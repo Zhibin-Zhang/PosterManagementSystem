@@ -72,8 +72,8 @@ if (session != null) {
 			</form>
 			<div class="welcome-message">Sort by date</div>
 				<ul>
-					<li>Newest</li>
-					<li>Oldest</li>
+					<li>newest</li>
+					<li>oldest</li>
 				</ul>
 			<div class="welcome-message">Sort by status</div>
 				<ul>
@@ -122,7 +122,7 @@ if (session != null) {
 					<li onclick="noneForm.submit()">	
 						<form name="noneForm" method = "post" action ="/admin.jsp">			
 				 		</form>	
-				 		None
+				 		none
 					</li>
 				</ul>
 		</div>
@@ -147,12 +147,12 @@ if (session != null) {
 						<input type="hidden" name="blobKey" value="<%=submissions.get(i).getBlobKey()%>"/>
 						<input type="hidden" name="actionIndex" value="<%=NetworkServlet.UPDATE%>"/>
 						<select onchange="this.form.submit()" name = "status">
-							<option value="<%=Submission.SUBMITTED%>"><%=Submission.SUBMITTED%></option>
-							<option value="<%=Submission.PROCESSING%>"><%=Submission.PROCESSING%></option>
-							<option value="<%=Submission.PRINTED%>"><%=Submission.PRINTED%></option>
-							<option value="<%=Submission.FINISHED%>"><%=Submission.FINISHED%></option>
-							<option value="<%=Submission.WRONG_FORMAT_SIZE%>"><%=Submission.WRONG_FORMAT_SIZE%></option>
-							<option value="<%=Submission.OTHER_ERRORS%>"><%=Submission.OTHER_ERRORS%></option>
+							<option value="<%=Submission.SUBMITTED%>" <% if(submissions.get(i).posterStatus.equals(Submission.SUBMITTED)){ out.print("SELECTED");}%>><%=Submission.SUBMITTED%> </option>
+							<option value="<%=Submission.PROCESSING%>"<% if(submissions.get(i).posterStatus.equals(Submission.PROCESSING)){ out.print("SELECTED");}%>><%=Submission.PROCESSING%></option>
+							<option value="<%=Submission.PRINTED%>" <% if(submissions.get(i).posterStatus.equals(Submission.PRINTED)){ out.print("SELECTED");}%>><%=Submission.PRINTED%></option>
+							<option value="<%=Submission.FINISHED%>" <% if(submissions.get(i).posterStatus.equals(Submission.FINISHED)){ out.print("SELECTED");}%>><%=Submission.FINISHED%></option>
+							<option value="<%=Submission.WRONG_FORMAT_SIZE%>" <% if(submissions.get(i).posterStatus.equals(Submission.WRONG_FORMAT_SIZE)){ out.print("SELECTED");}%>><%=Submission.WRONG_FORMAT_SIZE%></option>
+							<option value="<%=Submission.OTHER_ERRORS%>" <% if(submissions.get(i).posterStatus.equals(Submission.OTHER_ERRORS)){ out.print("SELECTED");}%>><%=Submission.OTHER_ERRORS%></option>
 						</select>
 					</form>
 					</li>

@@ -65,7 +65,7 @@ public class BlobstoreServlet extends HttpServlet{
 			resp.setStatus(HttpServletResponse.SC_OK);
 			resp.setContentType("text/plain");
 			PrintWriter writer = resp.getWriter();
-			writer.print(blobKey.toString());
+			writer.print(blobKey.getKeyString());
 			writer.flush();
 			writer.close();
 		}	

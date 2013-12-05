@@ -118,7 +118,7 @@ if (session != null) {
  
 %>
 		<div id="content-pane">
-			<p align="right"><b>Welcome <%= backendSession.emailAddress %> back end size (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
+			<p align="right"><b>Welcome <%= backendSession.emailAddress %> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
 
 <ul>
 <%if(submissions.size()==0){

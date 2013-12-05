@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,9 +20,11 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ByteArrayBody;
@@ -29,6 +33,10 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.files.AppEngineFile;
+import com.google.appengine.api.files.FileService;
+import com.google.appengine.api.files.FileServiceFactory;
+import com.google.appengine.api.files.FileWriteChannel;
 
 public class NetworkServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -124,14 +132,14 @@ public class NetworkServlet extends HttpServlet {
 				// Redirect the user to the list of submissions
 				/**
 				 * Added the lines here to get the submissions before redirect.
-				 * no longer need these lines, pulling from the endpoint on the webpage
-				 * - Matt
+				 * no longer need these lines, pulling from the endpoint on the
+				 * webpage - Matt
 				 */
 				if (backendSession.isAdmin) {
-					//endpoint.getAllSubmissions();
+					// endpoint.getAllSubmissions();
 					response.sendRedirect("/admin.jsp");
 				} else {
-					//endpoint.getSubmissions(emailAddress);
+					// endpoint.getSubmissions(emailAddress);
 					response.sendRedirect("/user.jsp");
 				}
 			}
@@ -139,40 +147,46 @@ public class NetworkServlet extends HttpServlet {
 			break;
 		case UPLOADPOSTER:
 			boolean registerFirst = true;
-			
+
 			// Check if there is an existing session
 			session = request.getSession(false);
 
 			// If there is an existing session, make sure it's valid
 			backendSession = null;
-			
+
 			if (session != null) {
 				if (session.getAttribute("token") != null) {
-					endpoint.setBackendSessionToken((String)session.getAttribute("token"));
+					endpoint.setBackendSessionToken((String) session
+							.getAttribute("token"));
 					backendSession = endpoint.authenticateSession();
-					
+
 					if (backendSession != null) {
 						if (!backendSession.isAdmin) {
 							registerFirst = false;
 						} else {
 							// User is not a normal user
 							response.sendRedirect("/admin.jsp");
+							break;
 						}
 					} else {
 						// Session does not exist
 						response.sendRedirect("/index.jsp?msg=no_session");
+						break;
 					}
 				} else {
 					// Token is not stored in HTTP session. Logout
-					response.sendRedirect("/NetworkServlet?actionIndex=" + NetworkServlet.LOGOUT);
+					response.sendRedirect("/NetworkServlet?actionIndex="
+							+ NetworkServlet.LOGOUT);
+					break;
 				}
 			}
-			
+
 			// Obtain registration information
 			String registerEmail = null;
 			String registerPassword = null;
 			String registerConfirmPassword = null;
-			ByteArrayBody file = null;
+
+			PosterFile posterFile = null;
 
 			boolean validFile = true;
 			boolean registerSuccessful = false;
@@ -196,17 +210,10 @@ public class NetworkServlet extends HttpServlet {
 						registerConfirmPassword = fieldValue;
 					}
 				} else {
-					// Validate the type file
-					if (!item.getContentType().equals("image/jpeg")
-							&& !item.getContentType().equals(
-									"application/vnd.ms-powerpoint")
-							&& !item.getContentType()
-									.equals("application/vnd.openxmlformats-officedocument.presentationml.presentation")
-							&& !item.getContentType().equals("application/pdf")
-							&& !item.getContentType().equals("image/png")) {
-						validFile = false;
-						break;
-					}
+					posterFile = new PosterFile();
+					
+					posterFile.name = item.getName();
+					posterFile.mimeType = item.getContentType();
 
 					// Read the file into a ByteArrayOutputStream:
 					// http://stackoverflow.com/questions/9375697/process-binary-file-in-java-using-fileitemstream
@@ -227,20 +234,9 @@ public class NetworkServlet extends HttpServlet {
 						out.close();
 					}
 
-					// Put the file in a ByteArrayBody for later
-					file = new ByteArrayBody(out.toByteArray(), item.getName());
-					
-					// Check the file size
-					if (out.toByteArray().length > 1024 * 1024) {
-						validFile = false;
-						break;
-					}
+					// Store the file in an array
+					posterFile.fileAsBytes = out.toByteArray();
 				}
-			}
-
-			if (!validFile) {
-				response.sendRedirect("/index.jsp?msg=register_invalid_file");
-				break;
 			}
 
 			if (registerFirst) {
@@ -271,7 +267,7 @@ public class NetworkServlet extends HttpServlet {
 				}
 			}
 
-			// If the user was created, upload the file to blobstore
+			// If the user was created, upload the file to the blobstore
 			if (registerFirst && registerSuccessful) {
 				// First authenticate to create a session
 				backendSession = endpoint.signIn(registerEmail,
@@ -280,30 +276,52 @@ public class NetworkServlet extends HttpServlet {
 				if (backendSession != null) {
 					// Authentication succeeded. Create session and store
 					// backend session token
+					endpoint.setBackendSessionToken(backendSession.token);
 					session = request.getSession(true);
 					session.setAttribute("token", backendSession.token);
 
-					try {
-						uploadPoster(request, backendSession.getToken(), file);
-					} catch (Exception e) {
+					// Attempt to upload poster
+					switch (endpoint.uploadPoster(posterFile).result) {
+					case UploadResult.UPLOAD_SUCCESS:
+						response.sendRedirect("/user.jsp?msg=upload_success");
+						break;
+					case UploadResult.UPLOAD_INVALID_FILE_TYPE:
+						response.sendRedirect("/user.jsp?msg=upload_invalid_type");
+						break;
+					case UploadResult.UPLOAD_MAX_SIZE_EXCEEDED:
+						response.sendRedirect("/user.jsp?msg=upload_max_size");
+						break;
+					case UploadResult.UPLOAD_NO_FILE:
+						response.sendRedirect("/user.jsp");
+						break;
+					default:
+						response.sendRedirect("/user.jsp?msg=upload_backend_error");
 					}
-
-					// Redirect the user to the list of submissions
-					response.sendRedirect("/user.jsp");
 				} else {
 					// Authentication failed for some reason
 					response.sendRedirect("/index.jsp?msg=register_authentication_error");
 				}
 			} else if (!registerFirst) {
-				// If we get to this point, we know there is an existing valid session
+				// If we get to this point, we know there is an existing valid
+				// session
 				// Just upload poster
-				try {
-					uploadPoster(request, backendSession.getToken(), file);
-				} catch (Exception e) {
+				// Attempt to upload poster
+				switch (endpoint.uploadPoster(posterFile).result) {
+				case UploadResult.UPLOAD_SUCCESS:
+					response.sendRedirect("/user.jsp?msg=upload_success");
+					break;
+				case UploadResult.UPLOAD_INVALID_FILE_TYPE:
+					response.sendRedirect("/user.jsp?msg=upload_invalid_type");
+					break;
+				case UploadResult.UPLOAD_MAX_SIZE_EXCEEDED:
+					response.sendRedirect("/user.jsp?msg=upload_max_size");
+					break;
+				case UploadResult.UPLOAD_NO_FILE:
+					response.sendRedirect("/user.jsp?msg=upload_no_file");
+					break;
+				default:
+					response.sendRedirect("/user.jsp?msg=upload_backend_error");
 				}
-				
-				// Redirect the user to the list of submissions
-				response.sendRedirect("/user.jsp");
 			}
 
 			break;
@@ -325,45 +343,13 @@ public class NetworkServlet extends HttpServlet {
 			response.sendRedirect("/index.jsp");
 			break;
 		case UPDATE:
-			session = request.getSession(false);			
-			if(session!=null){
-				endpoint.updateStatus((BlobKey)session.getAttribute("blobkey"),(String) session.getAttribute("status"));
+			session = request.getSession(false);
+			if (session != null) {
+				endpoint.updateStatus(
+						(BlobKey) session.getAttribute("blobkey"),
+						(String) session.getAttribute("status"));
 			}
 			response.sendRedirect("/admin.jsp");
 		}
 	}
-
-	private synchronized boolean uploadPoster(HttpServletRequest request,
-			String sessionID, ByteArrayBody body) throws Exception {
-		// Obtain the upload URL
-		BlobstoreService blobService = BlobstoreServiceFactory
-				.getBlobstoreService();
-		String uploadUrl = blobService.createUploadUrl("/upload");
-
-		// Build a POST request to that URL
-		// http://stackoverflow.com/questions/5071568/multi-part-post-with-file-and-string-in-httpclient-4-1
-		HttpPost post = new HttpPost(uploadUrl);
-
-		MultipartEntityBuilder entity = MultipartEntityBuilder.create();
-		entity.addTextBody("sessionid", sessionID);
-		entity.addPart("uploadPoster", body);
-
-		post.setEntity(entity.build());
-
-		// Send the request
-		HttpClient client = HttpClientBuilder.create().build();
-		HttpResponse response = null;
-
-		try {
-			response = client.execute(post);
-			System.out.println(response);
-		} catch (ClientProtocolException e) {
-			return false;
-		} catch (IOException e) {
-			return false;
-		}
-
-		return true;
-	}
-
 }

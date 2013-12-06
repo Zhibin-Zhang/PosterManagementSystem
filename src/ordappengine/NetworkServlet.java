@@ -310,7 +310,6 @@ public class NetworkServlet extends HttpServlet {
 				// Attempt to upload poster
 				switch (endpoint.uploadPoster(posterFile).result) {
 				case UploadResult.UPLOAD_SUCCESS:
-					// Generate a random number so that the list refreshes
 					response.sendRedirect("/user.jsp?msg=upload_success");
 					break;
 				case UploadResult.UPLOAD_INVALID_FILE_TYPE:
@@ -327,6 +326,56 @@ public class NetworkServlet extends HttpServlet {
 				}
 			}
 
+			break;
+		case DELETESUBMISSION:
+			// Check if there is an existing session
+			session = request.getSession(false);
+
+			// If there is an existing session, make sure it's valid
+			backendSession = null;
+
+			if (session != null) {
+				if (session.getAttribute("token") != null) {
+					endpoint.setBackendSessionToken((String) session
+							.getAttribute("token"));
+					backendSession = endpoint.authenticateSession();
+				} else {
+					// Token is not stored in HTTP session. Logout
+					response.sendRedirect("/NetworkServlet?actionIndex="
+							+ NetworkServlet.LOGOUT);
+					break;
+				}
+			}
+			
+			if (backendSession == null) {
+				// Session does not exist
+				response.sendRedirect("/index.jsp?msg=no_session");
+				break;
+			}
+			
+			// Obtain blob key
+			String blobKeyToDelete = request.getParameter("blobKey");
+			
+			// Attempt to delete
+			String redirectTo = "/" + (backendSession.isAdmin ? "admin" : "user") + ".jsp";
+			
+			switch (endpoint.deletePoster(blobKeyToDelete).result) {
+			case DeleteResult.DELETE_SUCCESS:
+				response.sendRedirect(redirectTo + "?msg=delete_success");
+				break;
+			case DeleteResult.DELETE_UNPRIVILEGED:
+				response.sendRedirect(redirectTo + "?msg=delete_unprivileged");
+				break;
+			case DeleteResult.DELETE_SUBMISSION_NOT_EXISTS:
+				response.sendRedirect(redirectTo + "?msg=delete_not_exists");
+				break;
+			case DeleteResult.DELETE_STATUS_CONFLICT:
+				response.sendRedirect(redirectTo + "?msg=delete_status_conflict");
+				break;
+			default:
+				response.sendRedirect(redirectTo + "?msg=delete_unspecified");
+			}
+			
 			break;
 		case LOGOUT:
 			// Check if there is an existing session

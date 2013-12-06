@@ -11,6 +11,10 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
@@ -97,6 +101,55 @@ public class NetworkEndpoint {
 
 		return null;
 	}
+	
+	@ApiMethod(name = "deletePoster")
+	public synchronized DeleteResult deletePoster(@Named("blobKeyString") String blobKeyString) {
+		if (blobKeyString == null) {
+			return new DeleteResult(DeleteResult.DELETE_INVALID_KEY);
+		}
+		
+		// Obtain submission information
+		Submission submission = storageManager.getSubmission(blobKeyString);
+		
+		if (submission == null) {
+			return new DeleteResult(DeleteResult.DELETE_SUBMISSION_NOT_EXISTS);
+		}
+		
+		// Check for privileges
+		BackendSession tempSession = null;
+		boolean privileged = false;
+		
+		if (session.token != null) {
+			tempSession = storageManager.getSessionFromCache(session.token);
+
+			if (tempSession != null) {
+				if (tempSession.isAdmin || tempSession.emailAddress.equals(submission.username)) {
+					privileged = true;
+				}
+			}
+		}
+
+		if (!privileged) {
+			return new DeleteResult(DeleteResult.DELETE_UNPRIVILEGED);
+		}
+		
+		// Check that the status is submitted (restriction applicable only if user is not an admin)
+		if (!tempSession.isAdmin && !submission.posterStatus.equals(Submission.SUBMITTED)) {
+			return new DeleteResult(DeleteResult.DELETE_STATUS_CONFLICT);
+		}
+		
+		// Delete submission from datastore
+		if (!storageManager.deleteSubmission(blobKeyString)) {
+			return new DeleteResult(DeleteResult.DELETE_BACKEND_ERROR);
+		}
+		
+		// Delete file from blobstore
+		// See: http://stackoverflow.com/questions/13208504/delete-files-from-blobstore-using-file-serving-url
+		BlobstoreService blobService = BlobstoreServiceFactory.getBlobstoreService();
+		blobService.delete(new BlobKey(blobKeyString));
+		
+		return new DeleteResult(DeleteResult.DELETE_SUCCESS);
+	}
 
 	@SuppressWarnings("deprecation")
 	@ApiMethod(name = "uploadPoster")
@@ -108,6 +161,7 @@ public class NetworkEndpoint {
 
 		// Validate file type
 		if (!file.mimeType.equals("image/jpeg")
+				&& !file.mimeType.equals("image/pjpeg")
 				&& !file.mimeType.equals("application/vnd.ms-powerpoint")
 				&& !file.mimeType
 						.equals("application/vnd.openxmlformats-officedocument.presentationml.presentation")

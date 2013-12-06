@@ -20,9 +20,6 @@ if (session != null) {
 		
 		if (backendSession != null) {
 			if (backendSession.isAdmin) {
-			
-
-
 				ArrayList<Submission> submissions = endpoint.getAllSubmissions();
 		 		String user = request.getParameter("q");
 		 		
@@ -41,8 +38,6 @@ if (session != null) {
 		 		if(submissions.size() > 4){
 		 			sidePaneSize += 76 * (submissions.size() - 4);
 		 		}
-		
-
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -54,9 +49,19 @@ if (session != null) {
 <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
 <title>Computer Science</title>
+<script type="text/javascript">
+	function showNotification(){
+		document.getElementById("overlay").style.display = "block";
+		document.getElementById("notification-dialog").style.display = "block";
+	}
+	function closeNotification(){
+		document.getElementById("overlay").style.display = "none";
+		document.getElementById("notification-dialog").style.display = "none";
+	}
+</script>
 </head>
 
-<body>
+<body<% if (request.getParameter("msg") != null) { out.print(" onload=\"showNotification()\""); } %>>
 
 <div id="menu-wrapper">
 	<div id="menu-center">
@@ -72,8 +77,8 @@ if (session != null) {
 			</form>
 			<div class="welcome-message">Sort by date</div>
 				<ul>
-					<li>Newest</li>
-					<li>Oldest</li>
+					<li>newest</li>
+					<li>oldest</li>
 				</ul>
 			<div class="welcome-message">Sort by status</div>
 				<ul>
@@ -122,12 +127,13 @@ if (session != null) {
 					<li onclick="noneForm.submit()">	
 						<form name="noneForm" method = "post" action ="/admin.jsp">			
 				 		</form>	
-				 		None
+				 		none
 					</li>
 				</ul>
 		</div>
 		<div id="content-pane">
 			<p align="right"><b>Welcome <%= backendSession.emailAddress %> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
+			<p align="right">You have <%= submissions.size()%> poster(s) (<b><a href="admin.jsp">Refresh</a></b>)</p>
 
 <ul>
 <%if(submissions.size()==0){
@@ -137,7 +143,9 @@ if (session != null) {
 		<li>
 			<div class="list-username"><% out.print(submissions.get(i).username);%></div>
 			<div class="list-filename"><%=submissions.get(i).posterName%></div>
-					<form class="formright">
+					<form action="/NetworkServlet" class="formright">
+						<input type="hidden" name="actionIndex" value="<%= NetworkServlet.DELETESUBMISSION %>"/>
+						<input type="hidden" name="blobKey" value="<%= submissions.get(i).getBlobKey() %>"/>
 						<input class="button" type="submit" value="Delete"/>
 					</form>	
 					<form class="formright">
@@ -147,12 +155,12 @@ if (session != null) {
 						<input type="hidden" name="blobKey" value="<%=submissions.get(i).getBlobKey()%>"/>
 						<input type="hidden" name="actionIndex" value="<%=NetworkServlet.UPDATE%>"/>
 						<select onchange="this.form.submit()" name = "status">
-							<option value="<%=Submission.SUBMITTED%>"<%= submissions.get(i).posterStatus.equals(Submission.SUBMITTED) ? " selected=\"selected\"" : "" %>><%=Submission.SUBMITTED%></option>
-							<option value="<%=Submission.PROCESSING%>"<%= submissions.get(i).posterStatus.equals(Submission.PROCESSING) ? " selected=\"selected\"" : "" %>><%=Submission.PROCESSING%></option>
-							<option value="<%=Submission.PRINTED%>"<%= submissions.get(i).posterStatus.equals(Submission.PRINTED) ? " selected=\"selected\"" : "" %>><%=Submission.PRINTED%></option>
-							<option value="<%=Submission.FINISHED%>"<%= submissions.get(i).posterStatus.equals(Submission.FINISHED) ? " selected=\"selected\"" : "" %>><%=Submission.FINISHED%></option>
-							<option value="<%=Submission.WRONG_FORMAT_SIZE%>"<%= submissions.get(i).posterStatus.equals(Submission.WRONG_FORMAT_SIZE) ? " selected=\"selected\"" : "" %>><%=Submission.WRONG_FORMAT_SIZE%></option>
-							<option value="<%=Submission.OTHER_ERRORS%>"<%= submissions.get(i).posterStatus.equals(Submission.OTHER_ERRORS) ? " selected=\"selected\"" : "" %>><%=Submission.OTHER_ERRORS%></option>
+							<option value="<%=Submission.SUBMITTED%>" <% if(submissions.get(i).posterStatus.equals(Submission.SUBMITTED)){ out.print("SELECTED");}%>><%=Submission.SUBMITTED%> </option>
+							<option value="<%=Submission.PROCESSING%>"<% if(submissions.get(i).posterStatus.equals(Submission.PROCESSING)){ out.print("SELECTED");}%>><%=Submission.PROCESSING%></option>
+							<option value="<%=Submission.PRINTED%>" <% if(submissions.get(i).posterStatus.equals(Submission.PRINTED)){ out.print("SELECTED");}%>><%=Submission.PRINTED%></option>
+							<option value="<%=Submission.FINISHED%>" <% if(submissions.get(i).posterStatus.equals(Submission.FINISHED)){ out.print("SELECTED");}%>><%=Submission.FINISHED%></option>
+							<option value="<%=Submission.WRONG_FORMAT_SIZE%>" <% if(submissions.get(i).posterStatus.equals(Submission.WRONG_FORMAT_SIZE)){ out.print("SELECTED");}%>><%=Submission.WRONG_FORMAT_SIZE%></option>
+							<option value="<%=Submission.OTHER_ERRORS%>" <% if(submissions.get(i).posterStatus.equals(Submission.OTHER_ERRORS)){ out.print("SELECTED");}%>><%=Submission.OTHER_ERRORS%></option>
 						</select>
 					</form>
 					</li>
@@ -176,6 +184,24 @@ if (session != null) {
 			Designed by Stephen Staker
 		</div>
 	</div>
+</div>
+<div id="overlay"></div>
+<div id="notification-dialog">
+	<div id="notification-area"><p><%
+	
+if (request.getParameter("msg") != null) {
+	if (request.getParameter("msg").equals("delete_success")) {
+		out.print("The poster was deleted successfully!");
+	} else if (request.getParameter("msg").equals("delete_unprivileged")) {
+		out.print("You do not have enough privileges to delete this poster.");
+	} else if (request.getParameter("msg").equals("delete_unspecified")) {
+		out.print("The poster could not be deleted. Please try again. An unspecified error has occurred.");
+	} else if (request.getParameter("msg").equals("delete_not_exists")) {
+		out.print("The poster could not be deleted because it no longer exists.");
+	}
+}
+			
+%></p><p><input class="button" type="button" value="Ok" onclick="closeNotification()" /></p></div>
 </div>
 </body>
 

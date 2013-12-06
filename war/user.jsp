@@ -82,7 +82,9 @@ if (session != null) {
 		<li>
 			<div class="list-username"><%=submissions.get(i).posterName%></div>
 			<div class="list-filename"><%=submissions.get(i).posterStatus%></div>
-				<form class="formright">
+				<form action="/NetworkServlet" class="formright">
+					<input type="hidden" name="actionIndex" value="<%= NetworkServlet.DELETESUBMISSION %>"/>
+					<input type="hidden" name="blobKey" value="<%= submissions.get(i).getBlobKey() %>"/>
 					<input class="button" type="submit" value="Delete"/>
 				</form>	
 				<form class="formright">
@@ -139,6 +141,16 @@ if (request.getParameter("msg") != null) {
 		out.print("Your poster was not uploaded. Please try again. An unspecified error has occurred.");
 	} else if (request.getParameter("msg").equals("upload_no_file")) {
 		out.print("You did not select a file to upload!");
+	} else if (request.getParameter("msg").equals("delete_success")) {
+		out.print("The poster was deleted successfully!");
+	} else if (request.getParameter("msg").equals("delete_unprivileged")) {
+		out.print("You do not have enough privileges to delete this poster.");
+	} else if (request.getParameter("msg").equals("delete_unspecified")) {
+		out.print("The poster could not be deleted. Please try again. An unspecified error has occurred.");
+	} else if (request.getParameter("msg").equals("delete_status_conflict")) {
+		out.print("The poster could not be deleted because its status is no longer <i>Submitted</i>.");
+	} else if (request.getParameter("msg").equals("delete_not_exists")) {
+		out.print("The poster could not be deleted because it no longer exists.");
 	}
 }
 			

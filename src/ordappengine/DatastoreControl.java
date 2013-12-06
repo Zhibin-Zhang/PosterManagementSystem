@@ -16,7 +16,6 @@ import javax.jdo.annotations.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 
-import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -279,6 +278,28 @@ public class DatastoreControl implements StorageManager {
 		}
 	return serves;
 	}
+	@Override
+	public Submission getSubmission(String blobKey) {
+		DatastoreService datastore =
+                DatastoreServiceFactory.getDatastoreService();
+		
+		Key key = KeyFactory.createKey("Submission", blobKey);
+		
+		try {
+			Submission result = new Submission();
+			Entity sub = datastore.get(key);
+			
+			result.blobKey = sub.getKey().getName();
+			result.posterName = sub.getProperty("posterName").toString();
+			result.posterStatus = sub.getProperty("posterStatus").toString();
+			result.username = sub.getProperty("username").toString();
+			
+			return result;
+		} catch (EntityNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	@Override
 	public boolean updateStatus(String blobKey, String status) {
@@ -297,18 +318,23 @@ public class DatastoreControl implements StorageManager {
 	}
 
 	@Override
-	public boolean deleteSumission(BlobKey blobKey) {
+	public boolean deleteSubmission(String blobKey) {
 		EntityManager em = EMF.get().createEntityManager();
 		Submission submission = null;
+		
 		try {
-			submission = em.find(Submission.class, blobKey);			
-			if(submission != null)
-				em.remove(submission);			
+			submission = em.find(Submission.class, KeyFactory.createKey("Submission", blobKey));
+			
+			if(submission != null) {
+				em.remove(submission);
+			}
 		} finally {
 			em.close();
 		}
+		
 		if(submission != null)
 			return true;
+		
 		return false;
 	}
 

@@ -10,7 +10,7 @@ import com.google.appengine.api.blobstore.BlobKey;
 
 @Entity(name = "submission")
 public class Submission {
-	public static final String SUBMITTED = "Submitted";
+	public static final String SUBMITTED = "submitted";
 	public static final String PROCESSING = "processing";
 	public static final String PRINTED = "printed";
 	public static final String FINISHED = "ready to pickup";

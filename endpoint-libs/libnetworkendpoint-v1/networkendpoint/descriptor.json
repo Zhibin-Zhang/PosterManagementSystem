@@ -1,13 +1,13 @@
 {
   "files": [
     {
-      "downloadUrl": "/downloads/networkendpoint/v1/20131207002847/java/1.16.0-rc/ordappengine-networkendpoint-v1-20131207002847-java-1.16.0-rc-sources.jar", 
-      "path": "ordappengine-networkendpoint-v1-20131207002847-java-1.16.0-rc-sources.jar", 
+      "downloadUrl": "/downloads/networkendpoint/v1/20131207222501/java/1.16.0-rc/ordappengine-networkendpoint-v1-20131207222501-java-1.16.0-rc-sources.jar", 
+      "path": "ordappengine-networkendpoint-v1-20131207222501-java-1.16.0-rc-sources.jar", 
       "type": "source", 
-      "timestamp": "2013-12-07 00:28"
+      "timestamp": "2013-12-07 22:25"
     }, 
     {
-      "path": "ordappengine-networkendpoint-v1-20131207002847-java-1.16.0-rc.jar.properties", 
+      "path": "ordappengine-networkendpoint-v1-20131207222501-java-1.16.0-rc.jar.properties", 
       "type": "android.properties"
     }
   ], 
@@ -702,5 +702,5 @@
   "packagePath": "ordappengine", 
   "language_version": "1.16.0-rc", 
   "id": "networkendpoint:v1", 
-  "revision": 20131207002847
+  "revision": 20131207222501
 }

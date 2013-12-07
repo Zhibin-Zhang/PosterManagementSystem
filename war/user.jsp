@@ -40,13 +40,13 @@ if (session != null) {
 		document.getElementById("overlay").style.display = "none";
 		document.getElementById("register-edit").style.display = "none";
 	}
-	function showNotification(){
+	function showRegistration(){
 		document.getElementById("overlay").style.display = "block";
-		document.getElementById("notification-dialog").style.display = "block";
+		document.getElementById("register-dialog").style.display = "block";
 	}
-	function closeNotification(){
+	function closeRegistration(){
 		document.getElementById("overlay").style.display = "none";
-		document.getElementById("notification-dialog").style.display = "none";
+		document.getElementById("register-dialog").style.display = "none";
 	}
 </script>
 </head>
@@ -90,9 +90,10 @@ if (session != null) {
 					<input type="hidden" name="blobKey" value="<%= submissions.get(i).getBlobKey() %>"/>
 					<input class="button" type="submit" value="Delete"/>
 				</form>	
-				<form class="formright">
+				<form action="/ServeBlobServlet" class="formright">
+					<input type = "hidden" name="blob-key" value ="<%=submissions.get(i).getBlobKey()%>"/>
 					<input class="button" type="submit" value="Download"/>
-				</form>
+				</form>	
 		</li>
 	<%}
 	}else{%>	

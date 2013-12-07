@@ -160,16 +160,22 @@ if (session != null) {
 	<%for(int i =0; i< submissions.size(); i++){%>
 	<!--Submissions list-->
 		<li>
+		<!--Username and Edit-->
 			<div class="list-username" id="myusername" onclick="showEdit('<%=submissions.get(i).username%>')"><% out.print(submissions.get(i).username);%></div>
+			<!--File Name-->
 			<div class="list-filename"><%=submissions.get(i).posterName%></div>
+			<!--Delete button-->
 					<form action="/NetworkServlet" class="formright">
 						<input type="hidden" name="actionIndex" value="<%= NetworkServlet.DELETESUBMISSION %>"/>
 						<input type="hidden" name="blobKey" value="<%= submissions.get(i).getBlobKey() %>"/>
 						<input class="button" type="submit" value="Delete"/>
 					</form>	
-					<form class="formright">
+					<!--Download button-->
+					<form class="formright" action="/ServeBlobServlet">
 						<input class="button" type="submit" value="Download"/>
+						<input type ="hidden" name ="blob-key" value = "<%= submissions.get(i).getBlobKey() %>"/>
 					</form>
+					<!--Update Status-->
 					<form method="post" action="NetworkServlet">							
 						<input type="hidden" name="blobKey" value="<%=submissions.get(i).getBlobKey()%>"/>
 						<input type="hidden" name="actionIndex" value="<%=NetworkServlet.UPDATE%>"/>

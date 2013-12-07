@@ -11,6 +11,11 @@
     <url-pattern>/NetworkServlet</url-pattern>
   </servlet-mapping>
   
+  <servlet-mapping>
+    <servlet-name>ServeBlobServlet</servlet-name>
+    <url-pattern>/ServeBlobServlet</url-pattern>
+  </servlet-mapping>
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>

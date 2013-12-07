@@ -50,6 +50,7 @@ public class NetworkServlet extends HttpServlet {
 	public static final int UPDATE = 6;
 	public static final int SEARCH = 7;
 	public static final int FILTER = 8;
+	public static final int EDIT = 9;
 	private static final Logger log = Logger.getLogger(NetworkServlet.class.getName());
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -395,17 +396,62 @@ public class NetworkServlet extends HttpServlet {
 			response.sendRedirect("/index.jsp");
 			break;
 		case UPDATE:
-			session = request.getSession(false);
-			if (session != null) {
+			// Check if there is an existing session
+						session = request.getSession(false);
+
+						// If there is an existing session, make sure it's valid
+						backendSession = null;
+
+						if (session != null) {
+							if (session.getAttribute("token") != null) {
+								endpoint.setBackendSessionToken((String) session
+										.getAttribute("token"));
+								backendSession = endpoint.authenticateSession();
+							} else {
+								// Token is not stored in HTTP session. Logout
+								response.sendRedirect("/NetworkServlet?actionIndex="
+										+ NetworkServlet.LOGOUT);
+								break;
+							}
+						}
+						
+						if (backendSession == null) {
+							// Session does not exist
+							response.sendRedirect("/index.jsp?msg=no_session");
+							break;
+						}
 				String status = request.getParameter("status");
 				String stringKey = request.getParameter("blobKey");				
 				endpoint.updateStatus(stringKey,status);
 				response.sendRedirect("/admin.jsp");
-			}			
+						
 			break;
 		case SEARCH:
-			session = request.getSession(false);
-			if(session!=null){
+			//local scope all variables
+			if(true){
+				// Check if there is an existing session
+				session = request.getSession(false);
+				// If there is an existing session, make sure it's valid
+				backendSession = null;
+
+				if (session != null) {
+					if (session.getAttribute("token") != null) {
+						endpoint.setBackendSessionToken((String) session
+								.getAttribute("token"));
+						backendSession = endpoint.authenticateSession();
+					} else {
+						// Token is not stored in HTTP session. Logout
+						response.sendRedirect("/NetworkServlet?actionIndex="
+								+ NetworkServlet.LOGOUT);
+						break;
+					}
+				}
+				
+				if (backendSession == null) {
+					// Session does not exist
+					response.sendRedirect("/index.jsp?msg=no_session");
+					break;
+				}
 				String user = request.getParameter("q");
 				System.out.println("User: "+user);
 				if(user.equals("")||user ==null){
@@ -415,14 +461,104 @@ public class NetworkServlet extends HttpServlet {
 			}
 			break;
 		case FILTER:
+			//local scope all variables
+			if(true){
+			// Check if there is an existing session
+			session = request.getSession(false);
+
+			// If there is an existing session, make sure it's valid
+			backendSession = null;
+
+			if (session != null) {
+				if (session.getAttribute("token") != null) {
+					endpoint.setBackendSessionToken((String) session
+							.getAttribute("token"));
+					backendSession = endpoint.authenticateSession();
+						} else {
+							// Token is not stored in HTTP session. Logout
+							response.sendRedirect("/NetworkServlet?actionIndex="
+									+ NetworkServlet.LOGOUT);
+							break;
+						}
+			}
+						
+			if (backendSession == null) {
+				// Session does not exist
+				response.sendRedirect("/index.jsp?msg=no_session");
+				break;
+			}
+			//all session validation done, perform filter operation
+			String filter = request.getParameter("filter");
+			if(filter.equals("none"))
+				response.sendRedirect("/admin.jsp");
+			response.sendRedirect("admin.jsp?filter="+filter);
+			}
+			break;
+		case EDIT:
+		//local scope all variables
+		{
+			// Check if there is an existing session
+			session = request.getSession(false);
+			// If there is an existing session, make sure it's valid
+			backendSession = null;
+
+			if (session != null) {
+				if (session.getAttribute("token") != null) {
+					endpoint.setBackendSessionToken((String) session
+							.getAttribute("token"));
+					backendSession = endpoint.authenticateSession();
+					} else {
+						// Token is not stored in HTTP session. Logout
+						response.sendRedirect("/NetworkServlet?actionIndex="
+								+ NetworkServlet.LOGOUT);
+						break;
+					}
+				}						
+				if (backendSession == null) {
+					// Session does not exist
+					response.sendRedirect("/index.jsp?msg=no_session");
+					break;
+				}
 			session = request.getSession(false);
 			if(session!=null){
-				String filter = request.getParameter("filter");
-				if(filter.equals("none"))
-					response.sendRedirect("/admin.jsp");
-				response.sendRedirect("admin.jsp?filter="+filter);
+				
+				String newPassword = request.getParameter("password");
+				System.out.println("Password: "+newPassword);
+				String user = request.getParameter("username");
+				String confirm = request.getParameter("confirm");
+				System.out.println("User: "+user);
+				System.out.println("Confirm: "+confirm);
+				//If the user is an admin allow change
+				if(backendSession.isAdmin){
+					User updatedUser = endpoint.editUser(user,newPassword);
+					if(updatedUser.password.equals(newPassword)){
+						response.sendRedirect("/admin.jsp?msg=edit_success");
+						break;
+					}
+				//if the user is normal, make sure they can only change their password
+				}else{
+					if(backendSession.emailAddress.equals(user)){						
+						if(!(confirm.equals(newPassword))){
+							response.sendRedirect("/user.jsp?msg=edit_password_match_error");
+							break;
+						}else{
+							User updatedUser = endpoint.editUser(user,newPassword);
+							if(updatedUser.password.equals(newPassword)){
+								response.sendRedirect("/user.jsp?msg=edit_success");
+							break;
+						}
+						}
+					}
+					
+				}
+				
 			}
-			
+		}
+		if(backendSession.isAdmin)
+			response.sendRedirect("/admin.jsp?msg=edit_failed");
+		else
+			response.sendRedirect("/user.jsp?msg=edit_failed");
+		break;		
 		}
 	}
 }

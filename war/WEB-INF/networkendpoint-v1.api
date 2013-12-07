@@ -78,6 +78,27 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "networkendpoint.getUser" : {
+      "path" : "user/{emailAddress}",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.getUser",
+      "request" : {
+        "parameters" : {
+          "emailAddress" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "networkendpoint.filterSubmissions" : {
       "path" : "filterSubmissions/{filter}",
       "httpMethod" : "POST",
@@ -267,6 +288,31 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
+    "networkendpoint.editUser" : {
+      "path" : "editUser/{emailAddress}/{password}",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.editUser",
+      "request" : {
+        "parameters" : {
+          "emailAddress" : {
+            "type" : "string",
+            "required" : true
+          },
+          "password" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
     "networkendpoint.uploadPoster" : {
       "path" : "uploadPoster",
       "httpMethod" : "POST",
@@ -349,6 +395,21 @@
           }
         }
       },
+      "User" : {
+        "id" : "User",
+        "type" : "object",
+        "properties" : {
+          "emailAddress" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "isAdmin" : {
+            "type" : "boolean"
+          }
+        }
+      },
       "StorageManager" : {
         "id" : "StorageManager",
         "type" : "object",
@@ -412,6 +473,11 @@
           "$ref" : "BackendSession"
         }
       },
+      "ordappengine.NetworkEndpoint.getUser" : {
+        "response" : {
+          "$ref" : "User"
+        }
+      },
       "ordappengine.NetworkEndpoint.filterSubmissions" : {
         "response" : {
           "$ref" : "SubmissionCollection"
@@ -446,6 +512,11 @@
       "ordappengine.NetworkEndpoint.registerUser" : {
         "response" : {
           "$ref" : "RegisterResult"
+        }
+      },
+      "ordappengine.NetworkEndpoint.editUser" : {
+        "response" : {
+          "$ref" : "User"
         }
       },
       "ordappengine.NetworkEndpoint.uploadPoster" : {

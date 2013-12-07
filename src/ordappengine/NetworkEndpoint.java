@@ -255,6 +255,14 @@ public class NetworkEndpoint {
 	public void insertPoster(Submission sub) {
 		storageManager.insertPoster(sub);
 	}
+	@ApiMethod(name = "editUser")
+	public User editUser(@Named("emailAddress") String emailAddress, @Named("password") String password){
+		return storageManager.editUser(emailAddress, password);
+	}
+	@ApiMethod(name = "getUser")
+	public User getUser(@Named("emailAddress") String emailAddress){
+		return storageManager.getUser(emailAddress);
+	}
 	@ApiMethod(name = "filterSubmissions")
 	public ArrayList<Submission> filterSubmissions(@Named("filter") String filter){
 		ArrayList<Submission> temp = this.getAllSubmissions();

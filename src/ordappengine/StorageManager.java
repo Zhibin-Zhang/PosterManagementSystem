@@ -25,7 +25,9 @@ public interface StorageManager {
 	
 	boolean deleteSubmission(String blobKey);
 	
-	boolean editUser(String emailAddress, String password);
+	User editUser(String emailAddress, String password);
+	
+	User getUser(String emailAddress);
 
 	Submission getSubmission(String blobKey);
 	

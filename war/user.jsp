@@ -31,13 +31,14 @@ if (session != null) {
 <link href='http://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
 <title>Computer Science</title>
 <script type="text/javascript">
-	function showRegistration(){
+	function showEdit(var1){
 		document.getElementById("overlay").style.display = "block";
-		document.getElementById("register-dialog").style.display = "block";
+		document.getElementById("register-edit").style.display = "block";
+		document.getElementById("editUsername").value=var1;
 	}
-	function closeRegistration(){
+	function closeEdit(){
 		document.getElementById("overlay").style.display = "none";
-		document.getElementById("register-dialog").style.display = "none";
+		document.getElementById("register-edit").style.display = "none";
 	}
 	function showNotification(){
 		document.getElementById("overlay").style.display = "block";
@@ -69,7 +70,9 @@ if (session != null) {
   ArrayList<Submission> submissions = endpoint.getSubmissions(backendSession.emailAddress);
 %>
 		<div id="content-pane">
-			<p align="right"><b>Welcome <%= backendSession.emailAddress %> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
+		<div align="right"
+			<p><b>Welcome </b><a href="javascript:void(0)" onclick="showEdit('<%=backendSession.emailAddress%>')"><% out.print(backendSession.emailAddress);%></a><b> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
+			</div>
 			<div id="upload-area">
 				<p>Click on the button below to upload a poster. You may upload .pdf, .ppt, .pptx, .jpg, or .png files that are 7 MB or smaller.</p>
 				<p><input type="button" class="button" value="Upload Poster" onclick="showRegistration()"></p>
@@ -151,10 +154,27 @@ if (request.getParameter("msg") != null) {
 		out.print("The poster could not be deleted because its status is no longer <i>Submitted</i>.");
 	} else if (request.getParameter("msg").equals("delete_not_exists")) {
 		out.print("The poster could not be deleted because it no longer exists.");
+	}else if (request.getParameter("msg").equals("edit_password_match_error")) {
+		out.print("Passwords did not match");
+	}else if (request.getParameter("msg").equals("edit_success")) {
+		out.print("Your password has been successfully updated!");
+	}else if (request.getParameter("msg").equals("edit_failed")) {
+		out.print("Warning: Your password could not be updated.  If this error persists contact an administrator.");
 	}
 }
 			
 %></p><p><input class="button" type="button" value="Ok" onclick="closeNotification()" /></p></div>
+</div>
+<!--Edit user pop up form-->
+<div class="dialog" id="register-edit">
+	<form id="edit-form" method="post" action="NetworkServlet?actionIndex=<% out.print(NetworkServlet.EDIT); %>">
+			<img src="images/exit.png" onClick="closeEdit()"/>	
+			<p>New Password</p>
+			<p><input type="password" placeholder="New Password" name="password"/></p>		
+			<p><input type="password" placeholder="Confirm Password" name="confirm"/></p>				
+			<p><input class="button" type="submit" value="Submit Edit"/></p>
+			<input type = "hidden" id="editUsername" name="username"/>
+	</form>
 </div>
 </body>
 

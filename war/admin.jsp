@@ -21,20 +21,19 @@ if (session != null) {
 		if (backendSession != null) {
 			if (backendSession.isAdmin) {
 				ArrayList<Submission> submissions = endpoint.getAllSubmissions();
+				User editUser=null;
 		 		String user = request.getParameter("q");
-		 		
+						 		
 		 		if(user != null) {
 		 			submissions=endpoint.getSubmissions(user);
-		 		}
-		 		
-		 		String filter = request.getParameter("filter");
-		 		
+					if(submissions.isEmpty())
+					editUser = endpoint.getUser(user);
+		 		}		 		
+		 		String filter = request.getParameter("filter");		 		
 		 		if(filter != null) {
 		 			submissions=endpoint.filterSubmissions(filter);
-		 		}
-		 		
+		 		}		 		
 		 		int sidePaneSize = 428;
-		 		
 		 		if(submissions.size() > 4){
 		 			sidePaneSize += 76 * (submissions.size() - 4);
 		 		}
@@ -50,6 +49,16 @@ if (session != null) {
 <link href='http://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
 <title>Computer Science</title>
 <script type="text/javascript">
+	function showEdit(var1){
+		document.getElementById("overlay").style.display = "block";
+		document.getElementById("register-dialog").style.display = "block";
+		document.getElementById("username").innerHTML=var1;
+		document.getElementById("editUsername").value=var1;
+	}
+	function closeEdit(){
+		document.getElementById("overlay").style.display = "none";
+		document.getElementById("register-dialog").style.display = "none";
+	}
 	function showNotification(){
 		document.getElementById("overlay").style.display = "block";
 		document.getElementById("notification-dialog").style.display = "block";
@@ -80,6 +89,7 @@ if (session != null) {
 					<li>newest</li>
 					<li>oldest</li>
 				</ul>
+			<!--Sort by status list-->
 			<div class="welcome-message">Sort by status</div>
 				<ul>
 					<li onclick="submittedForm.submit()">
@@ -131,17 +141,26 @@ if (session != null) {
 					</li>
 				</ul>
 		</div>
+		<!--Header on admin page-->
 		<div id="content-pane">
 			<p align="right"><b>Welcome <%= backendSession.emailAddress %> (<a href="NetworkServlet?actionIndex=<%= NetworkServlet.LOGOUT %>">Logout</a>)</b></p>
 			<p align="right">You have <%= submissions.size()%> poster(s) (<b><a href="admin.jsp">Refresh</a></b>)</p>
 
 <ul>
-<%if(submissions.size()==0){
+<%if(submissions.isEmpty()){
+	if(editUser!=null){
+	%>
+	<div class="list-username" id="myusername" onclick="showEdit('<%=editUser.emailAddress%>')"><% out.print(editUser.emailAddress);%></div>
+	<div class="list-filename"><%out.print("This user has no submissions but, you can change their password by clicking on their email address");%></div>
+	<%
+	}else{
     out.print("Either you have no submissions, or your filter turned up zero results.");
+	}
     }%>
 	<%for(int i =0; i< submissions.size(); i++){%>
+	<!--Submissions list-->
 		<li>
-			<div class="list-username"><% out.print(submissions.get(i).username);%></div>
+			<div class="list-username" id="myusername" onclick="showEdit('<%=submissions.get(i).username%>')"><% out.print(submissions.get(i).username);%></div>
 			<div class="list-filename"><%=submissions.get(i).posterName%></div>
 					<form action="/NetworkServlet" class="formright">
 						<input type="hidden" name="actionIndex" value="<%= NetworkServlet.DELETESUBMISSION %>"/>
@@ -198,10 +217,26 @@ if (request.getParameter("msg") != null) {
 		out.print("The poster could not be deleted. Please try again. An unspecified error has occurred.");
 	} else if (request.getParameter("msg").equals("delete_not_exists")) {
 		out.print("The poster could not be deleted because it no longer exists.");
+	}else if (request.getParameter("msg").equals("edit_success")) {
+		out.print("Password has been successfully updated");
+	}else if (request.getParameter("msg").equals("edit_failed")) {
+		out.print("Warning: Password update was unsuccessful.");
 	}
 }
 			
 %></p><p><input class="button" type="button" value="Ok" onclick="closeNotification()" /></p></div>
+</div>
+<!--Edit user pop up form-->
+<div class="dialog" id="register-dialog">
+	<form id="register-form" method="post" action="NetworkServlet?actionIndex=<% out.print(NetworkServlet.EDIT); %>">
+			<img src="images/exit.png" onClick="closeEdit()"/>
+			<p>Editing User:</p>
+			<p id="username"></p>		
+			<p>New Password</p>
+			<p><input placeholder="New Password" name="password"/></p>			
+			<p><input class="button" type="submit" value="Submit Edit"/></p>
+			<input type = "hidden" id="editUsername" name="username"/>
+	</form>
 </div>
 </body>
 

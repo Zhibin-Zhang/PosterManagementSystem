@@ -320,18 +320,15 @@ public class DatastoreControl implements StorageManager {
 	@Override
 	public boolean deleteSubmission(String blobKey) {
 		EntityManager em = EMF.get().createEntityManager();
-		Submission submission = null;
-		
+		Submission submission = null;		
 		try {
-			submission = em.find(Submission.class, KeyFactory.createKey("Submission", blobKey));
-			
+			submission = em.find(Submission.class, KeyFactory.createKey("Submission", blobKey));			
 			if(submission != null) {
 				em.remove(submission);
 			}
 		} finally {
 			em.close();
-		}
-		
+		}		
 		if(submission != null)
 			return true;
 		
@@ -339,18 +336,40 @@ public class DatastoreControl implements StorageManager {
 	}
 
 	@Override
-	public boolean editUser(String emailAddress, String password) {
-		EntityManager em = EMF.get().createEntityManager();
-		User user = null;
-		try{
-			user = em.find(User.class, emailAddress);
-			if(user != null)
-				user.password = password;
-		} finally{
-			em.clear();
+	public User editUser(String emailAddress, String password) {
+		DatastoreService datastore =
+                DatastoreServiceFactory.getDatastoreService();
+		Key key = KeyFactory.createKey("User", emailAddress);
+		User result=new User();
+		try {
+			Entity user = datastore.get(key);
+			user.setProperty("password", password);			
+			datastore.put(user);
+			result.emailAddress=user.getKey().getName();
+			result.password=user.getProperty("password").toString();
+			result.isAdmin=(boolean)user.getProperty("isAdmin");
+			
+		} catch (EntityNotFoundException e) {
+			e.printStackTrace();
+			return null;
 		}
-		if(user != null)
-			return true;
-		return false;
+		return result;		
+	}
+	@Override
+	public User getUser(String emailAddress){
+		DatastoreService datastore =
+                DatastoreServiceFactory.getDatastoreService();
+		
+		Key key = KeyFactory.createKey("User", emailAddress);
+		
+		try {
+			User result = new User();
+			Entity user = datastore.get(key);
+			result.emailAddress=user.getKey().getName();			
+			return result;
+		} catch (EntityNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

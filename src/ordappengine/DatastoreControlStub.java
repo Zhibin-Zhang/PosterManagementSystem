@@ -83,13 +83,19 @@ public class DatastoreControlStub implements StorageManager {
 	}
 
 	@Override
-	public boolean editUser(String emailAddress, String password) {
+	public User editUser(String emailAddress, String password) {
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 
 	@Override
 	public Submission getSubmission(String blobKey) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User getUser(String emailAddress) {
 		// TODO Auto-generated method stub
 		return null;
 	}

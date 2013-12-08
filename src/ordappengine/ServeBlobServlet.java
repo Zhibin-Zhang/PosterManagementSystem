@@ -64,15 +64,14 @@ public class ServeBlobServlet extends HttpServlet{
 			IOException {
 		System.out.print("Blobkey: "+req.getParameter("blob-key"));
 		BlobKey blobKey = new BlobKey(req.getParameter("blob-key"));
+		DatastoreControl dc = new DatastoreControl();
+		Submission sub = dc.getSubmission(req.getParameter("blob-key"));
 		BlobInfoFactory blobInfoFactory = new BlobInfoFactory(DatastoreServiceFactory.getDatastoreService());
 		BlobInfo blobInfo = blobInfoFactory.loadBlobInfo(blobKey);
-		System.out.print("BlobInfo: "+blobInfo);
-		log.info("BlobInfo: "+blobInfo);
-		log.info("BlobInfo: "+blobInfo.getFilename());
-		System.out.print("BlobInfo: "+blobInfo.getFilename());
+		System.out.print("filename: " + sub.posterName);
 		resp.setContentLength(new Long(blobInfo.getSize()).intValue());
 		resp.setHeader("content-type", blobInfo.getContentType());
-		resp.setHeader("content-disposition", "attachment; filename=" + blobInfo.getFilename());
+		resp.setHeader("content-disposition", "attachment; filename=" + sub.posterName);
 		blobstoreService.serve(blobKey, resp);		
 	}
 		

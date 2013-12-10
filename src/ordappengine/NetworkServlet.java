@@ -472,7 +472,7 @@ public class NetworkServlet extends HttpServlet {
 			}
 			//all session validation done, perform filter operation
 			String filter = request.getParameter("filter");
-			if(filter.equals("none"))
+			if(filter.equals("none") || filter.equals("newest"))
 				response.sendRedirect("/admin.jsp");
 			response.sendRedirect("admin.jsp?filter="+filter);
 			}

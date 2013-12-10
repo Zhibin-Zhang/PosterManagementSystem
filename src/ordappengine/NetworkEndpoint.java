@@ -2,6 +2,8 @@ package ordappengine;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 
 import javax.inject.Named;
 
@@ -10,6 +12,8 @@ import org.apache.commons.validator.routines.EmailValidator;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.appengine.api.blobstore.BlobInfo;
+import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
@@ -22,6 +26,7 @@ import com.google.appengine.api.files.FileWriteChannel;
 public class NetworkEndpoint {
 	private StorageManager storageManager;
 	private BackendSession session;
+	private BlobInfoFactory infoFactory = new BlobInfoFactory();
 
 	public NetworkEndpoint() {
 		storageManager = new DatastoreControl();
@@ -264,7 +269,44 @@ public class NetworkEndpoint {
 	@ApiMethod(name = "filterSubmissions")
 	public ArrayList<Submission> filterSubmissions(@Named("filter") String filter){
 		ArrayList<Submission> temp = this.getAllSubmissions();
-		ArrayList<Submission> returningList = new ArrayList<Submission>();
+		ArrayList<Submission> returningList = new ArrayList<Submission>(); 
+		//Sort Submissions by oldest first
+		if(filter.equals("oldest")){
+			ArrayList<BlobDate> blobDates = new ArrayList<BlobDate>();
+			for(int i = 0; i<temp.size();i++){
+				BlobKey blobKey = new BlobKey(temp.get(i).blobKey);
+				BlobInfo info = infoFactory.loadBlobInfo(blobKey);
+				Date date = info.getCreation();
+				BlobDate blobDate = new BlobDate();
+				blobDate.setDate(date);
+				blobDate.setSubmission(temp.get(i));
+				blobDates.add(blobDate);
+				
+			}
+			Collections.sort(blobDates, new CustomComparator());
+			for(int i = 0; i < blobDates.size(); i++){
+				returningList.add(blobDates.get(i).submission);
+			}
+		}
+		if(filter.equals("newest")){
+			ArrayList<BlobDate> blobDates = new ArrayList<BlobDate>();
+			for(int i = 0; i<temp.size();i++){
+				BlobKey blobKey = new BlobKey(temp.get(i).blobKey);
+				BlobInfo info = infoFactory.loadBlobInfo(blobKey);
+				Date date = info.getCreation();
+				BlobDate blobDate = new BlobDate();
+				blobDate.setDate(date);
+				blobDate.setSubmission(temp.get(i));
+				blobDates.add(blobDate);
+				
+			}
+			CustomComparator customComparator = new CustomComparator();
+			Collections.reverseOrder(customComparator);
+			Collections.sort(blobDates, customComparator);
+			for(int i = 0; i < blobDates.size(); i++){
+				returningList.add(blobDates.get(i).submission);
+			}
+		}
 		if(filter.equals(Submission.FINISHED)){
 			for(int i = 0; i<temp.size();i++){
 				if(temp.get(i).posterStatus.equals((Submission.FINISHED))){

@@ -12,16 +12,18 @@ public class RegisterResult {
 
 	public int result;
 
+	public int getResult() {
+		return result;
+	}
+
+	public void setResult(int result) {
+		this.result = result;
+	}
+
 	public RegisterResult(int result) {
 		this.result = result;
 	}
 	
-	public void setResult(int r){
-		this.result=r;
-	}
-	
-	public int getResult(){
-		return this.result;
-	}
+
 
 }

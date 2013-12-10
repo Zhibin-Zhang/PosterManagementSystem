@@ -15,5 +15,13 @@ public class RegisterResult {
 	public RegisterResult(int result) {
 		this.result = result;
 	}
+	
+	public void setResult(int r){
+		this.result=r;
+	}
+	
+	public int getResult(){
+		return this.result;
+	}
 
 }

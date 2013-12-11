@@ -58,7 +58,7 @@ response.setHeader("Expires", "Sat, 26 Jul 1997 05:00:00 GMT");
 
 <div id="menu-wrapper">
 	<div id="menu-center">
-		<a href="index.jsp"><img alt="" src="images/whitelogo.png" /></a>
+		<img alt="" src="images/whitelogo.png" />
 		<div class="register" onclick="showRegistration()">Register and Submit Poster</div>
 		<form id="signin-form" method="post" action="NetworkServlet">
 			<input name="emailAddress" type="email" placeholder="Email address"/>

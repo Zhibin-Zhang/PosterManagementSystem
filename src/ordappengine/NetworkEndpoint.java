@@ -93,6 +93,7 @@ public class NetworkEndpoint {
 
 	@ApiMethod(name = "setBackendSessionToken")
 	public void setBackendSessionToken(@Named("token") String token) {
+		System.out.println("setBackendSessionToken token " + token);
 		session.token = token;
 	}
 
@@ -122,10 +123,18 @@ public class NetworkEndpoint {
 		BackendSession tempSession = null;
 		boolean privileged = false;
 		
+		System.out.println("session.token = " + session.token);
+		
 		if (session.token != null) {
 			tempSession = storageManager.getSessionFromCache(session.token);
-
+			
 			if (tempSession != null) {
+				System.out.println("session.token = " + session.token);
+				
+				System.out.println("tempSession is not null");
+				System.out.println("tempSession.isAdmin = " + tempSession.emailAddress);
+				System.out.println("submission.username = " + submission.username);
+				
 				if (tempSession.isAdmin || tempSession.emailAddress.equals(submission.username)) {
 					privileged = true;
 				}

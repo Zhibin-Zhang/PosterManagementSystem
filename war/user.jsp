@@ -55,14 +55,14 @@ if (session != null) {
 
 <div id="menu-wrapper">
 	<div id="menu-center">
-		<a href="index.html"><img alt="" src="images/whitelogo.png" /></a>
+		<img alt="" src="images/whitelogo.png" />
 	</div>
 </div>
 <div id="content-wrapper">
 	<div id="content-window">
 		<div id="side-pane">
 			<div class="welcome-message">
-				These are instructions to use our system. You do not know how to use the system so these are instructions to use the system.
+				Your submissions are listed on the right. Use the <i>Upload Poster</i>  button to upload a new poster. You can also click on your email on the right side to change your password.
 			</div>		
 		</div>
 		<%

@@ -74,20 +74,32 @@ if (session != null) {
 
 <div id="menu-wrapper">
 	<div id="menu-center">
-		<a href="index.jsp"><img alt="" src="images/whitelogo.png" /></a>
+		<img alt="" src="images/whitelogo.png" />
 	</div>
 </div>
 <div id="content-wrapper">
 	<div id="content-window">
-		<div id="side-pane" style="height:<%=sidePaneSize%>">
+		<div id="side-pane" style="height: <%=sidePaneSize%>px">
 			<form method="post" action="NetworkServlet">		
 				<input type="search" placeholder="Search by user" results="5" name="q" autosave="ord">
 				<input type="hidden" name="actionIndex" value="<%=NetworkServlet.SEARCH%>"/>
 			</form>
 			<div class="welcome-message">Sort by date</div>
 				<ul>
-					<li>newest</li>
-					<li>oldest</li>
+					<li onclick="newestForm.submit()">
+						<form name="newestForm" method = "post" action ="NetworkServlet">
+							<input type="hidden" name="actionIndex" value="<%=NetworkServlet.FILTER%>"/>
+							<input type="hidden" name="filter" value ="newest"/>		
+				 		</form>
+						newest
+					</li>
+					<li onclick="oldestForm.submit()">
+						<form name="oldestForm" method = "post" action ="NetworkServlet">
+							<input type="hidden" name="actionIndex" value="<%=NetworkServlet.FILTER%>"/>
+							<input type="hidden" name="filter" value ="oldest"/>		
+				 		</form>
+						oldest
+					</li>
 				</ul>
 			<!--Sort by status list-->
 			<div class="welcome-message">Sort by status</div>

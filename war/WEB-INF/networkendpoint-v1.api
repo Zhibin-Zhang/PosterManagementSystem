@@ -27,27 +27,6 @@
   "ownerName" : "ordappengine",
   "packagePath" : "ordappengine",
   "methods" : {
-    "networkendpoint.setBackendSessionToken" : {
-      "path" : "setBackendSessionToken/{token}",
-      "httpMethod" : "POST",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "ordappengine.NetworkEndpoint.setBackendSessionToken",
-      "request" : {
-        "parameters" : {
-          "token" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "empty"
-      }
-    },
     "networkendpoint.deletePoster" : {
       "path" : "poster/{blobKeyString}",
       "httpMethod" : "DELETE",
@@ -97,31 +76,6 @@
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "networkendpoint.updateStatus" : {
-      "path" : "void/{blobKey}/{status}",
-      "httpMethod" : "PUT",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "ordappengine.NetworkEndpoint.updateStatus",
-      "request" : {
-        "parameters" : {
-          "blobKey" : {
-            "type" : "string",
-            "required" : true
-          },
-          "status" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "empty"
       }
     },
     "networkendpoint.getUser" : {
@@ -181,22 +135,6 @@
         "body" : "empty"
       }
     },
-    "networkendpoint.setStorageManager" : {
-      "path" : "setStorageManager",
-      "httpMethod" : "POST",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "ordappengine.NetworkEndpoint.setStorageManager",
-      "request" : {
-        "body" : "autoTemplate(backendRequest)",
-        "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "empty"
-      }
-    },
     "networkendpoint.insertPoster" : {
       "path" : "void",
       "httpMethod" : "POST",
@@ -205,6 +143,114 @@
       "audiences" : [ ],
       "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
       "rosyMethod" : "ordappengine.NetworkEndpoint.insertPoster",
+      "request" : {
+        "body" : "autoTemplate(backendRequest)",
+        "bodyName" : "resource"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "networkendpoint.getSubmissions" : {
+      "path" : "submissioncollection/{emailAddress}",
+      "httpMethod" : "GET",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.getSubmissions",
+      "request" : {
+        "parameters" : {
+          "emailAddress" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "networkendpoint.signIn" : {
+      "path" : "signIn/{emailAddress}/{password}",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.signIn",
+      "request" : {
+        "parameters" : {
+          "emailAddress" : {
+            "type" : "string",
+            "required" : true
+          },
+          "password" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "autoTemplate(backendResponse)"
+      }
+    },
+    "networkendpoint.setBackendSessionToken" : {
+      "path" : "setBackendSessionToken/{token}",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.setBackendSessionToken",
+      "request" : {
+        "parameters" : {
+          "token" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "networkendpoint.updateStatus" : {
+      "path" : "void/{blobKey}/{status}",
+      "httpMethod" : "PUT",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.updateStatus",
+      "request" : {
+        "parameters" : {
+          "blobKey" : {
+            "type" : "string",
+            "required" : true
+          },
+          "status" : {
+            "type" : "string",
+            "required" : true
+          }
+        },
+        "body" : "empty"
+      },
+      "response" : {
+        "body" : "empty"
+      }
+    },
+    "networkendpoint.setStorageManager" : {
+      "path" : "setStorageManager",
+      "httpMethod" : "POST",
+      "authLevel" : "NONE",
+      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
+      "audiences" : [ ],
+      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
+      "rosyMethod" : "ordappengine.NetworkEndpoint.setStorageManager",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
         "bodyName" : "resource"
@@ -267,27 +313,6 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "networkendpoint.getSubmissions" : {
-      "path" : "submissioncollection/{emailAddress}",
-      "httpMethod" : "GET",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "ordappengine.NetworkEndpoint.getSubmissions",
-      "request" : {
-        "parameters" : {
-          "emailAddress" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
     "networkendpoint.uploadPoster" : {
       "path" : "uploadPoster",
       "httpMethod" : "POST",
@@ -299,31 +324,6 @@
       "request" : {
         "body" : "autoTemplate(backendRequest)",
         "bodyName" : "resource"
-      },
-      "response" : {
-        "body" : "autoTemplate(backendResponse)"
-      }
-    },
-    "networkendpoint.signIn" : {
-      "path" : "signIn/{emailAddress}/{password}",
-      "httpMethod" : "POST",
-      "authLevel" : "NONE",
-      "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
-      "audiences" : [ ],
-      "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "ordappengine.NetworkEndpoint.signIn",
-      "request" : {
-        "parameters" : {
-          "emailAddress" : {
-            "type" : "string",
-            "required" : true
-          },
-          "password" : {
-            "type" : "string",
-            "required" : true
-          }
-        },
-        "body" : "empty"
       },
       "response" : {
         "body" : "autoTemplate(backendResponse)"
@@ -458,8 +458,6 @@
       }
     },
     "methods" : {
-      "ordappengine.NetworkEndpoint.setBackendSessionToken" : {
-      },
       "ordappengine.NetworkEndpoint.deletePoster" : {
         "response" : {
           "$ref" : "DeleteResult"
@@ -475,8 +473,6 @@
           "$ref" : "BackendSession"
         }
       },
-      "ordappengine.NetworkEndpoint.updateStatus" : {
-      },
       "ordappengine.NetworkEndpoint.getUser" : {
         "response" : {
           "$ref" : "User"
@@ -489,14 +485,28 @@
       },
       "ordappengine.NetworkEndpoint.logout" : {
       },
-      "ordappengine.NetworkEndpoint.setStorageManager" : {
-        "request" : {
-          "$ref" : "StorageManager"
-        }
-      },
       "ordappengine.NetworkEndpoint.insertPoster" : {
         "request" : {
           "$ref" : "Submission"
+        }
+      },
+      "ordappengine.NetworkEndpoint.getSubmissions" : {
+        "response" : {
+          "$ref" : "SubmissionCollection"
+        }
+      },
+      "ordappengine.NetworkEndpoint.signIn" : {
+        "response" : {
+          "$ref" : "BackendSession"
+        }
+      },
+      "ordappengine.NetworkEndpoint.setBackendSessionToken" : {
+      },
+      "ordappengine.NetworkEndpoint.updateStatus" : {
+      },
+      "ordappengine.NetworkEndpoint.setStorageManager" : {
+        "request" : {
+          "$ref" : "StorageManager"
         }
       },
       "ordappengine.NetworkEndpoint.registerUser" : {
@@ -509,22 +519,12 @@
           "$ref" : "User"
         }
       },
-      "ordappengine.NetworkEndpoint.getSubmissions" : {
-        "response" : {
-          "$ref" : "SubmissionCollection"
-        }
-      },
       "ordappengine.NetworkEndpoint.uploadPoster" : {
         "request" : {
           "$ref" : "PosterFile"
         },
         "response" : {
           "$ref" : "UploadResult"
-        }
-      },
-      "ordappengine.NetworkEndpoint.signIn" : {
-        "response" : {
-          "$ref" : "BackendSession"
         }
       }
     }
